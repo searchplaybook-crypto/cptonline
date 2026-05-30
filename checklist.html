@@ -1,621 +1,501 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Operations Deployment Center — Activity Matrix</title>
+  <title>Search Playbook | Source of Truth Engine</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-base: #F4F4F5;
-      --panel-box: #FFFFFF;
-      --panel-border: rgba(24, 24, 27, 0.08);
-      
-      --wmc-cyan: #06B6D4;
-      --wmc-track: rgba(6, 182, 212, 0.12);
-      --cpt-gold: #D4AF37;
-      --cpt-track: rgba(212, 175, 55, 0.12);
-      --system-green: #22C55E;
-      --system-track: rgba(34, 197, 94, 0.12);
-      
-      --text-primary: #18181B;
-      --text-muted: #71717A;
-      --system-red: #EF4444;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      --night-blue: #064A73;
+      --icy-azure: #43CFFD;
+      --onyx-grey: #18181B;
+      --platinum: #E4E4E7;
+      --mafia-gold: #D4AF37;
+      --alert-red: #EA110B;
+      --bg-dark: #09090B;
+      --success-green: #22C55E;
+      --panel-border: rgba(228, 228, 231, 0.1);
     }
 
     body {
-      background: var(--bg-base);
-      color: var(--text-primary);
-      padding: 40px 20px;
-      line-height: 1.6;
-      min-height: 100vh;
+      background-color: var(--bg-dark);
+      color: var(--platinum);
+      font-family: 'Open Sans', sans-serif;
     }
 
-    .master-container {
-      max-width: 900px;
-      margin: 0 auto;
-    }
+    .display-font { font-family: 'Raleway', sans-serif; }
 
-    .ops-header {
-      background: var(--panel-box);
-      border: 1px solid var(--panel-border);
-      padding: 30px;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
-      margin-bottom: 40px;
-    }
-
-    .brand-sync-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 30px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid rgba(24, 24, 27, 0.06);
-    }
-
-    .brand-meta {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .brand-logo-img {
-      height: 40px;
-      width: auto;
-      object-fit: contain;
-    }
-
-    .brand-divider {
-      color: var(--text-muted);
-      font-weight: 300;
-      font-size: 1.5rem;
-    }
-
-    .ops-title {
-      font-size: 1.1rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-    }
-
-    /* IWATCH CIRCULAR RINGS WRAPPER LAYOUT */
-    .dashboard-analytics-panel {
-      display: grid;
-      grid-template-columns: 200px 1fr;
-      gap: 30px;
-      background: rgba(24, 24, 27, 0.02);
+    .glass-panel {
+      background: rgba(24, 24, 27, 0.8);
       border: 1px solid var(--panel-border);
       border-radius: 12px;
-      padding: 24px;
-      margin-bottom: 25px;
-      align-items: center;
     }
 
+    .audit-row {
+      background-color: var(--onyx-grey);
+      border-left: 4px solid #3f3f46;
+      transition: all 0.2s ease;
+      margin-bottom: 8px;
+    }
+
+    .audit-row:hover {
+      border-left-color: var(--icy-azure);
+      background-color: #27272a;
+    }
+
+    .status-btn {
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+    
+    .state-matched .btn-matched { background: rgba(34, 197, 94, 0.15); border-color: var(--success-green); color: var(--success-green); }
+    .state-mismatch .btn-mismatch { background: rgba(234, 17, 11, 0.15); border-color: var(--alert-red); color: var(--alert-red); }
+    .state-pending .btn-pending { background: rgba(212, 175, 55, 0.15); border-color: var(--mafia-gold); color: var(--mafia-gold); }
+
+    .badge {
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .badge-geo { background: rgba(6, 74, 115, 0.3); border: 1px solid var(--night-blue); color: var(--icy-azure); }
+    .badge-cpt { background: rgba(212, 175, 55, 0.1); border: 1px solid var(--mafia-gold); color: var(--mafia-gold); }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-dark); }
+    ::-webkit-scrollbar-thumb { background: var(--night-blue); border-radius: 4px; }
+
+    /* Activity Rings CSS */
     .gauge-viewframe {
-      width: 180px;
-      height: 180px;
+      width: 140px;
+      height: 140px;
       margin: 0 auto;
     }
-
     .activity-ring-bg {
       fill: none;
-      stroke-width: 12;
+      stroke-width: 10;
+      stroke: rgba(255, 255, 255, 0.05);
     }
-
     .activity-ring-progress {
       fill: none;
-      stroke-width: 12;
+      stroke-width: 10;
       stroke-linecap: round;
       transform: rotate(-90deg);
       transform-origin: 50% 50%;
       transition: stroke-dashoffset 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .ring-legend-list {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 12px;
+    .safeguard-banner {
+      border: 1px solid var(--alert-red);
+      background: rgba(234, 17, 11, 0.04);
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 16px;
+      display: none;
     }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 0.85rem;
-      font-weight: 600;
-    }
-
-    .legend-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-    }
-
-    .meta-control-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 16px;
-      margin-bottom: 25px;
-    }
-
+    .safeguard-banner.breached { display: block; }
+    
     .meta-control-box {
-      background: rgba(24, 24, 27, 0.03);
+      background: rgba(24, 24, 27, 0.4);
       border: 1px solid var(--panel-border);
-      padding: 14px;
+      padding: 10px 14px;
       border-radius: 8px;
     }
-
     .meta-control-box label {
       display: block;
       font-size: 0.65rem;
-      color: var(--text-muted);
+      color: #71717a;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       font-weight: 700;
     }
-
     .meta-control-box input, .meta-control-box select {
       width: 100%;
       background: transparent;
       border: none;
-      color: var(--text-primary);
+      color: var(--platinum);
       font-size: 0.95rem;
       font-weight: 600;
       outline: none;
     }
-
-    .safeguard-banner {
-      border: 1px solid var(--system-red);
-      background: rgba(239, 68, 68, 0.04);
-      border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 25px;
-      display: none;
-    }
-
-    .safeguard-banner.breached {
-      display: block;
-    }
-
-    .safeguard-title {
-      color: var(--system-red);
-      font-size: 0.8rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 4px;
-    }
-
-    .telemetry-display {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 15px;
-      border-top: 1px solid rgba(24, 24, 27, 0.06);
-      padding-top: 20px;
-    }
-
-    .telemetry-stat {
-      text-align: center;
-      border-right: 1px solid rgba(24, 24, 27, 0.06);
-    }
-
-    .telemetry-stat:last-child {
-      border-right: none;
-    }
-
-    .stat-value {
-      font-size: 1.4rem;
-      font-weight: 700;
-    }
-
-    .stat-label {
-      font-size: 0.65rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .phase-block {
-      margin-bottom: 35px;
-    }
-
-    .phase-header {
-      font-size: 0.8rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      color: var(--text-muted);
-    }
-
-    .phase-header::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: rgba(24, 24, 27, 0.06);
-    }
-
-    .task-card {
-      background: var(--panel-box);
-      border: 1px solid var(--panel-border);
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 16px;
-      cursor: pointer;
-      display: flex;
-      gap: 16px;
-      transition: all 0.2s ease;
-      user-select: none;
-    }
-
-    .task-card:hover {
-      border-color: var(--text-muted);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
-    }
-
-    .task-card.executed {
-      background: rgba(34, 197, 148, 0.02);
-      border-color: var(--system-green) !important;
-    }
-
-    .state-checkbox {
-      width: 20px;
-      height: 20px;
-      border: 2px solid var(--text-muted);
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-top: 2px;
-      flex-shrink: 0;
-      background: var(--panel-box);
-    }
-
-    .task-card.executed .state-checkbox {
-      background: var(--system-green);
-      border-color: var(--system-green);
-    }
-
-    .state-checkbox::after {
-      content: '';
-      width: 4px;
-      height: 8px;
-      border: solid #FFF;
-      border-width: 0 2px 2px 0;
-      transform: rotate(45deg);
-      display: none;
-      margin-bottom: 2px;
-    }
-
-    .task-card.executed .state-checkbox::after {
-      display: block;
-    }
-
-    .task-content {
-      flex: 1;
-    }
-
-    .task-title {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin-bottom: 4px;
-    }
-
-    .task-card.executed .task-title {
-      color: var(--text-muted);
-      text-decoration: line-through;
-    }
-
-    .task-desc {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      line-height: 1.5;
-      margin-bottom: 12px;
-    }
-
-    .badge-row {
-      display: flex;
-      gap: 8px;
-    }
-
-    .badge {
-      font-size: 0.6rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      padding: 3px 8px;
-      border-radius: 4px;
-    }
-
-    .badge-wmc { background: rgba(6, 182, 212, 0.08); color: #0891B2; }
-    .badge-cpt { background: rgba(212, 175, 55, 0.08); color: #9A7B1C; }
-    .badge-vis { background: rgba(24, 24, 27, 0.04); color: var(--text-primary); }
-    .badge-priv { background: rgba(24, 24, 27, 0.04); color: var(--text-primary); }
-    .badge-saf { background: rgba(239, 68, 68, 0.08); color: var(--system-red); }
-
-    .terminal-footer {
-      display: flex;
-      justify-content: flex-end;
-      gap: 16px;
-      padding-top: 25px;
-      border-top: 1px solid var(--panel-border);
-    }
-
-    .action-btn {
-      background: var(--panel-box);
-      color: var(--text-primary);
-      border: 1px solid var(--panel-border);
-      padding: 12px 24px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .action-btn:hover {
-      background: rgba(24, 24, 27, 0.03);
-      border-color: var(--text-muted);
-    }
-
-    @media (max-width: 768px) {
-      .dashboard-analytics-panel { grid-template-columns: 1fr; text-align: center; }
-      .ring-legend-list { align-items: center; }
-      .telemetry-display { grid-template-columns: 1fr; gap: 12px; }
-      .telemetry-stat { border-right: none; border-bottom: 1px solid rgba(24, 24, 27, 0.06); padding-bottom: 10px; }
-      .telemetry-stat:last-child { border-bottom: none; }
-      .terminal-footer { flex-direction: column; }
-    }
+    .meta-control-box select option { background: var(--onyx-grey); }
   </style>
 </head>
-<body>
+<body class="p-4 md:p-8 min-h-screen">
 
-<div class="master-container">
-
-  <header class="ops-header">
-    <div class="brand-sync-row">
-      <div class="brand-meta">
-        <img class="brand-logo-img" src="https://ik.imagekit.io/wemustcreate/Shield.png?updatedAt=1777882057056" alt="WeMustCreate">
-        <span class="brand-divider">×</span>
-        <img class="brand-logo-img" src="https://payhip.com/cdn-cgi/image/format=auto/https://pe56d.s3.amazonaws.com/o_1jp7kst3i7he1v9es6s1go1uofc.png" alt="CPT Online">
-      </div>
-      <div class="ops-title">Operations Activity Gauge</div>
-    </div>
-
-    <div class="dashboard-analytics-panel">
-      <div class="gauge-viewframe">
-        <svg width="180" height="180" viewBox="0 0 180 180">
-          <circle cx="90" cy="90" r="72" class="activity-ring-bg" stroke="var(--wmc-track)" />
-          <circle cx="90" cy="90" r="72" id="ringP1" class="activity-ring-progress" stroke="var(--wmc-cyan)" stroke-dasharray="452.39" stroke-dashoffset="452.39" />
-          
-          <circle cx="90" cy="90" r="56" class="activity-ring-bg" stroke="var(--cpt-track)" />
-          <circle cx="90" cy="90" r="56" id="ringP2" class="activity-ring-progress" stroke="var(--cpt-gold)" stroke-dasharray="351.86" stroke-dashoffset="351.86" />
-          
-          <circle cx="90" cy="90" r="40" class="activity-ring-bg" stroke="var(--system-track)" />
-          <circle cx="90" cy="90" r="40" id="ringP3" class="activity-ring-progress" stroke="var(--system-green)" stroke-dasharray="251.33" stroke-dashoffset="251.33" />
-        </svg>
-      </div>
-      <div class="ring-legend-list">
-        <div class="legend-item"><span class="legend-dot" style="background: var(--wmc-cyan)"></span>Phase 1: Local Foundations (<span id="txtPctP1">0%</span>)</div>
-        <div class="legend-item"><span class="legend-dot" style="background: var(--cpt-gold)"></span>Phase 2: Context Engineering (<span id="txtPctP2">0%</span>)</div>
-        <div class="legend-item"><span class="legend-dot" style="background: var(--system-green)"></span>Phase 3: Security Isolation (<span id="txtPctP3">0%</span>)</div>
-      </div>
-    </div>
-    
-    <div class="meta-control-grid">
-      <div class="meta-control-box">
-        <label>Client Reference</label>
-        <input type="text" id="runtimeClient" placeholder="Awaiting client definition..." onchange="persistConfigurations()">
-      </div>
-      <div class="meta-control-box">
-        <label>Mission Tier Evaluation</label>
-        <select id="runtimeTier" onchange="synchronizeTelemetry()">
-          <option value="4000">Digital Birth Certificate — R4,000 Base</option>
-          <option value="4750">Visibility Base Mission — R4,750 Base</option>
-          <option value="6412">AI-Optimized Mission — R6,412 Base</option>
-        </select>
-      </div>
-      <div class="meta-control-box">
-        <label>Verification Boundary Assessment</label>
-        <select id="runtimeVerification" onchange="synchronizeTelemetry()">
-          <option value="standard">Standard Internal Window (1-21 Days)</option>
-          <option value="exceeded">External Verification Window Exceeded (>21 Days)</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="safeguard-banner" id="safeguardIndicator">
-      <div class="safeguard-title">Operational Boundary Surcharge Active</div>
-      <p class="task-desc" style="margin-bottom:0; color: var(--text-primary);">
-        Verification tracking loop has surpassed allocated windows. 
-        <strong>Action Item:</strong> Append maintenance revisit structure (<strong>R1,000 Surcharge</strong>) prior to confirming final system state.
-      </p>
-    </div>
-
-    <div class="telemetry-display">
-      <div class="telemetry-stat">
-        <div class="stat-value" id="metricsFinancials">R4,000</div>
-        <div class="stat-label">Financial Position</div>
-      </div>
-      <div class="telemetry-stat">
-        <div class="stat-value" id="metricsTasks">0 / 9</div>
-        <div class="stat-label">Tasks Locked</div>
-      </div>
-      <div class="telemetry-stat">
-        <div class="stat-value" id="metricsPercentage">0%</div>
-        <div class="stat-label">Total Execution</div>
+<div class="max-w-6xl mx-auto">
+  
+  <header class="glass-panel p-6 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b-2 border-[#064A73]">
+    <div class="flex items-center gap-4">
+      <img src="https://ik.imagekit.io/wemustcreate/Shield.png?updatedAt=1777882057056" alt="WeMustCreate" class="h-10">
+      <span class="text-zinc-600 text-2xl font-light">|</span>
+      <img src="https://payhip.com/cdn-cgi/image/format=auto/https://pe56d.s3.amazonaws.com/o_1jp7kst3i7he1v9es6s1go1uofc.png" alt="CPT Online" class="h-8">
+      <div class="ml-4 border-l border-zinc-700 pl-4">
+        <h1 class="display-font text-xl font-bold text-white tracking-wide">Operations Deployment Center</h1>
+        <p class="text-xs text-[#43CFFD] font-bold tracking-widest uppercase">Unified Matrix Engine</p>
       </div>
     </div>
   </header>
 
-  <main class="pipeline-container">
-
-    <div class="phase-block" id="blockPhase1">
-      <div class="phase-header">Phase 1: Foundations & Local Authentication</div>
-      
-      <div class="task-card" id="tk1" onclick="executeTaskShift(this)">
-        <div class="state-checkbox"></div>
-        <div class="task-content">
-          <h3 class="task-title">NAP Alignment & Foundational Analysis</h3>
-          <p class="task-desc">Cross-reference exact structural naming strings across primary local layers to secure zero indexing variance.</p>
-          <div class="badge-row">
-            <span class="badge badge-wmc">WeMustCreate</span>
-            <span class="badge badge-vis">GEO Core</span>
-          </div>
-        </div>
+  <!-- Dashboard Analytics Panel -->
+  <div class="glass-panel p-6 mb-8 grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+    
+    <div class="flex flex-col sm:flex-row gap-6 items-center lg:col-span-2">
+      <div class="gauge-viewframe flex-shrink-0">
+        <svg width="140" height="140" viewBox="0 0 140 140">
+          <circle cx="70" cy="70" r="56" class="activity-ring-bg" />
+          <circle cx="70" cy="70" r="56" id="ringP1" class="activity-ring-progress" stroke="var(--icy-azure)" stroke-dasharray="351.86" stroke-dashoffset="351.86" />
+          
+          <circle cx="70" cy="70" r="44" class="activity-ring-bg" />
+          <circle cx="70" cy="70" r="44" id="ringP2" class="activity-ring-progress" stroke="var(--mafia-gold)" stroke-dasharray="276.46" stroke-dashoffset="276.46" />
+          
+          <circle cx="70" cy="70" r="32" class="activity-ring-bg" />
+          <circle cx="70" cy="70" r="32" id="ringP3" class="activity-ring-progress" stroke="var(--success-green)" stroke-dasharray="201.06" stroke-dashoffset="201.06" />
+        </svg>
       </div>
-
-      <div class="task-card" id="tk2" onclick="executeTaskShift(this)">
-        <div class="state-checkbox"></div>
-        <div class="task-content">
-          <h3 class="task-title">LLM Intent Mapping Loops</h3>
-          <p class="task-desc">Execute deep iterative interrogations inside targeted LLM nodes to discover competing local cluster domains.</p>
-          <div class="badge-row">
-            <span class="badge badge-wmc">WeMustCreate</span>
-            <span class="badge badge-vis">Visibility</span>
-          </div>
+      <div class="flex flex-col gap-3">
+        <div class="flex items-center gap-3 text-sm font-bold">
+          <span class="w-3 h-3 rounded-full bg-[#43CFFD]"></span> Phase 1: Source of Truth (<span id="txtPctP1">0%</span>)
         </div>
-      </div>
-
-      <div class="task-card" id="tk3" onclick="executeTaskShift(this)">
-        <div class="state-checkbox"></div>
-        <div class="task-content">
-          <h3 class="task-title">Sovereignty Audit & Zero-Imprint Setup</h3>
-          <p class="task-desc">Provision standalone communication parameters from distinct local endpoints to preserve true account ancestry.</p>
-          <div class="badge-row">
-            <span class="badge badge-cpt">CPT Online</span>
-            <span class="badge badge-priv">Privacy</span>
-          </div>
+        <div class="flex items-center gap-3 text-sm font-bold">
+          <span class="w-3 h-3 rounded-full bg-[#D4AF37]"></span> Phase 2: Reputation & Context (<span id="txtPctP2">0%</span>)
         </div>
-      </div>
-
-      <div class="task-card" id="tk4" onclick="executeTaskShift(this)">
-        <div class="state-checkbox"></div>
-        <div class="task-content">
-          <h3 class="task-title">Geocoded Visual Verification Mechanics</h3>
-          <p class="task-desc">Record hardware-authenticated environmental visual frames across specific orientation categories for profile matching.</p>
-          <div class="badge-row">
-            <span class="badge badge-cpt">CPT Online</span>
-            <span class="badge badge-vis">Visibility</span>
-          </div>
+        <div class="flex items-center gap-3 text-sm font-bold">
+          <span class="w-3 h-3 rounded-full bg-[#22C55E]"></span> Phase 3: Security Isolation (<span id="txtPctP3">0%</span>)
         </div>
       </div>
     </div>
 
-    <div class="phase-block" id="blockPhase2">
-      <div class="phase-header">Phase 2: Context Engineering & Commercial Sync</div>
+    <div class="space-y-3 lg:border-l lg:border-zinc-800 lg:pl-8">
+      <div class="meta-control-box">
+        <label>Client Reference</label>
+        <input type="text" id="runtimeClient" placeholder="Awaiting client definition..." oninput="syncTelemetry()">
+      </div>
+      <div class="meta-control-box">
+        <label>Mission Tier</label>
+        <select id="runtimeTier" onchange="syncTelemetry()">
+          <option value="4000">Digital Birth Certificate — R4,000</option>
+          <option value="4750">Visibility Base Mission — R4,750</option>
+          <option value="6412">AI-Optimized Mission — R6,412</option>
+        </select>
+      </div>
+      <div class="meta-control-box">
+        <label>Verification Boundary</label>
+        <select id="runtimeVerification" onchange="syncTelemetry()">
+          <option value="standard">Standard Window (1-21 Days)</option>
+          <option value="exceeded">Boundary Exceeded (>21 Days)</option>
+        </select>
+      </div>
       
-      <div class="task-card" id="tk5" onclick="executeTaskShift(this)">
-        <div class="state-checkbox"></div>
-        <div class="task-content">
-          <h3 class="task-title">Digital Warehouse Grid Injection</h3>
-          <p class="task-desc">Map specific product entities directly into active deployment fields to form click-to-action routing patterns.</p>
-          <div class="badge-row">
-            <span class="badge badge-wmc">WeMustCreate</span>
-            <span class="badge badge-vis">Visibility</span>
-          </div>
-        </div>
+      <div class="safeguard-banner" id="safeguardIndicator">
+        <p class="text-xs font-bold text-[#EA110B] uppercase tracking-wide">Boundary Surcharge Active (+R1,000)</p>
       </div>
 
-      <div class="task-card" id="tk6" onclick="executeTaskShift(this)">
-        <div class="state-checkbox"></div>
-        <div class="task-content">
-          <h3 class="task-title">Semantic Structured FAQ Optimization</h3>
-          <p class="task-desc">Deploy contextually dense answer nodes containing accessibility and configuration terms to feeds.</p>
-          <div class="badge-row">
-            <span class="badge badge-wmc">WeMustCreate</span>
-            <span class="badge badge-vis">Visibility</span>
-          </div>
-        </div>
+      <div class="mt-4 pt-4 border-t border-zinc-800 flex justify-between items-center">
+        <span class="text-xs text-zinc-500 font-bold uppercase tracking-widest">Financial Total</span>
+        <span class="display-font text-2xl font-bold text-white" id="metricsFinancials">R4,000</span>
       </div>
+    </div>
+  </div>
 
-      <div class="task-card" id="tk7" onclick="executeTaskShift(this)">
-        <div class="state-checkbox"></div>
-        <div class="task-content">
-          <h3 class="task-title">Communication Core Architecture Setup</h3>
-          <p class="task-desc">Build exact inventory asset indexes within the internal trade parameters and establish baseline cart functions.</p>
-          <div class="badge-row">
-            <span class="badge badge-cpt">CPT Online</span>
-            <span class="badge badge-vis">Visibility</span>
-          </div>
-        </div>
+  <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+    
+    <!-- Phase 1: NAP Audit -->
+    <div class="glass-panel p-6">
+      <h2 class="display-font text-lg font-bold text-white mb-4 flex items-center gap-2 border-b border-zinc-800 pb-2">
+        <span class="w-2 h-2 bg-[#43CFFD] rounded-full"></span> Phase 1: NAP Consistency Audit
+      </h2>
+      <div id="nap-container" class="space-y-1">
+        <!-- Injected via JS -->
       </div>
     </div>
 
-    <div class="phase-block" id="blockPhase3">
-      <div class="phase-header">Phase 3: Isolation, Authority & Perimeter Hardening</div>
+    <!-- Phase 2 & 3: Reputation and Security -->
+    <div class="space-y-8">
       
-      <div class="task-card" id="tk8" onclick="executeTaskShift(this)">
-        <div class="state-checkbox"></div>
-        <div class="task-content">
-          <h3 class="task-title">Surgical Citation Authority Handover</h3>
-          <p class="task-desc">Isolate targeted hyper-local reference layers and execute security step-down to standard configuration keys.</p>
-          <div class="badge-row">
-            <span class="badge badge-wmc">WeMustCreate</span>
-            <span class="badge badge-saf">Safety</span>
-          </div>
+      <div class="glass-panel p-6">
+        <h2 class="display-font text-lg font-bold text-white mb-4 flex items-center gap-2 border-b border-zinc-800 pb-2">
+          <span class="w-2 h-2 bg-[#D4AF37] rounded-full"></span> Phase 2: Reputation & Context
+        </h2>
+        <div id="rep-container" class="space-y-2">
+          <!-- Injected via JS -->
         </div>
       </div>
 
-      <div class="task-card" id="tk9" onclick="executeTaskShift(this)">
-        <div class="state-checkbox"></div>
-        <div class="task-content">
-          <h3 class="task-title">Isolation Loop & Cryptographic 2FA Locking</h3>
-          <p class="task-desc">Enforce deep dual-factor account isolation criteria and sever lingering third-party communication routes.</p>
-          <div class="badge-row">
-            <span class="badge badge-cpt">CPT Online</span>
-            <span class="badge badge-saf">Safety</span>
-          </div>
+      <div class="glass-panel p-6">
+        <h2 class="display-font text-lg font-bold text-white mb-4 flex items-center gap-2 border-b border-zinc-800 pb-2">
+          <span class="w-2 h-2 bg-[#22C55E] rounded-full"></span> Phase 3: Isolation & Hardening
+        </h2>
+        <div id="sec-container" class="space-y-2">
+          <!-- Injected via JS -->
         </div>
       </div>
+
+      <div class="flex gap-4">
+        <button onclick="serializeLedger()" class="flex-1 bg-[#064A73] hover:bg-[#43CFFD] hover:text-zinc-900 transition-colors text-white font-bold py-3 px-4 rounded text-sm uppercase tracking-wide">
+          Serialize Full State
+        </button>
+        <button onclick="purgeData()" class="flex-1 bg-transparent border border-zinc-700 hover:border-[#EA110B] hover:text-[#EA110B] transition-colors text-zinc-400 font-bold py-3 px-4 rounded text-xs uppercase tracking-wide">
+          Purge Environment
+        </button>
+      </div>
+
     </div>
 
-  </main>
-
-  <footer class="terminal-footer">
-    <button class="action-btn" onclick="serializeDataToClipboard()">Serialize State</button>
-    <button class="action-btn" onclick="purgeDeploymentEnvironment()">Purge Local Storage</button>
-  </footer>
-
+  </div>
 </div>
 
 <script>
-  function executeTaskShift(element) {
-    element.classList.toggle('executed');
-    saveOperationalState();
-    synchronizeTelemetry();
+  // Source of Truth Data (14 items)
+  const napSources = [
+    { id: 'n1', name: 'Google Business Profile', badge: 'GEO Core' },
+    { id: 'n2', name: 'Apple Business Connect', badge: 'GEO Core' },
+    { id: 'n3', name: 'Brabys Directory', badge: 'Local SA' },
+    { id: 'n4', name: 'Yellow Pages (SA)', badge: 'Local SA' },
+    { id: 'n5', name: 'Bing Places for Business', badge: 'GEO Core' },
+    { id: 'n6', name: 'Facebook Page', badge: 'Social' },
+    { id: 'n7', name: 'Yelp South Africa', badge: 'Review' },
+    { id: 'n8', name: 'South African Business Dir', badge: 'Local SA' },
+    { id: 'n9', name: 'CIPC Official Record', badge: 'Authority' },
+    { id: 'n10', name: 'Hotfrog SA', badge: 'Local SA' },
+    { id: 'n11', name: 'LinkedIn Company Profile', badge: 'Social' },
+    { id: 'n12', name: 'Foursquare City Guide', badge: 'Data Broker' },
+    { id: 'n13', name: 'TomTom Maps', badge: 'Data Broker' },
+    { id: 'n14', name: 'Here WeGo', badge: 'Data Broker' }
+  ];
+
+  // Reputation Data (3 items)
+  const repTasks = [
+    { id: 'r1', name: 'Fake Account Analysis', desc: 'Scan for unauthorized social impersonations.', badge: 'CPT Online' },
+    { id: 'r2', name: '1-Star Review Takedown', desc: 'Audit for policy-violating reviews to suppress.', badge: 'CPT Online' },
+    { id: 'r3', name: 'LLM Context FAQs', desc: 'Identify AI blind spots and prepare semantic FAQ injection.', badge: 'WeMustCreate' }
+  ];
+
+  // Security Data (2 items)
+  const secTasks = [
+    { id: 's1', name: 'Cryptographic 2FA Locking', desc: 'Enforce deep dual-factor account isolation criteria.', badge: 'CPT Online' },
+    { id: 's2', name: 'Citation Authority Handover', desc: 'Isolate targeted hyper-local reference layers.', badge: 'WeMustCreate' }
+  ];
+
+  function renderDash() {
+    const napContainer = document.getElementById('nap-container');
+    napSources.forEach(s => {
+      napContainer.innerHTML += `
+        <div class="audit-row p-3 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 state-pending rounded" id="row-${s.id}">
+          <div>
+            <span class="badge badge-geo mr-2">${s.badge}</span>
+            <span class="font-bold text-sm text-platinum">${s.name}</span>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="setState('${s.id}', 'matched')" class="status-btn btn-matched px-3 py-1 text-[10px] font-bold rounded bg-zinc-800 text-zinc-500 uppercase">Match</button>
+            <button onclick="setState('${s.id}', 'mismatch')" class="status-btn btn-mismatch px-3 py-1 text-[10px] font-bold rounded bg-zinc-800 text-zinc-500 uppercase">Mismatch</button>
+            <button onclick="setState('${s.id}', 'pending')" class="status-btn btn-pending px-3 py-1 text-[10px] font-bold rounded bg-zinc-800 text-zinc-500 uppercase">Pending</button>
+          </div>
+        </div>
+      `;
+    });
+
+    const repContainer = document.getElementById('rep-container');
+    repTasks.forEach(r => {
+      repContainer.innerHTML += `
+        <div class="audit-row p-4 flex justify-between items-center cursor-pointer rounded" id="row-${r.id}" onclick="toggleTask('${r.id}', 'rep')">
+          <div>
+            <span class="badge badge-cpt mb-1 inline-block">${r.badge}</span>
+            <h4 class="font-bold text-sm text-white">${r.name}</h4>
+            <p class="text-xs text-zinc-400 mt-1">${r.desc}</p>
+          </div>
+          <div class="w-6 h-6 border-2 border-zinc-500 rounded flex items-center justify-center check-box" id="box-${r.id}"></div>
+        </div>
+      `;
+    });
+
+    const secContainer = document.getElementById('sec-container');
+    secTasks.forEach(s => {
+      secContainer.innerHTML += `
+        <div class="audit-row p-4 flex justify-between items-center cursor-pointer rounded" id="row-${s.id}" onclick="toggleTask('${s.id}', 'sec')">
+          <div>
+            <span class="badge badge-geo mb-1 inline-block" style="background: rgba(34, 197, 94, 0.1); border-color: var(--success-green); color: var(--success-green);">${s.badge}</span>
+            <h4 class="font-bold text-sm text-white">${s.name}</h4>
+            <p class="text-xs text-zinc-400 mt-1">${s.desc}</p>
+          </div>
+          <div class="w-6 h-6 border-2 border-zinc-500 rounded flex items-center justify-center check-box" id="box-${s.id}"></div>
+        </div>
+      `;
+    });
+
+    hydrate();
   }
 
-  function synchronizeTelemetry() {
-    const total = 9;
-    const executedCount = document.querySelectorAll('.task-card.executed').length;
-    const globalProgressPct = Math.round((executedCount / total) * 100);
+  function setState(id, state) {
+    const row = document.getElementById(`row-${id}`);
+    row.classList.remove('state-matched', 'state-mismatch', 'state-pending');
+    row.classList.add(`state-${state}`);
+    syncTelemetry();
+  }
+
+  function toggleTask(id, type) {
+    const row = document.getElementById(`row-${id}`);
+    const box = document.getElementById(`box-${id}`);
+    const color = type === 'rep' ? '#D4AF37' : '#22C55E';
     
-    document.getElementById('metricsTasks').textContent = `${executedCount} / ${total}`;
-    document.getElementById('metricsPercentage').textContent = `${globalProgressPct}%`;
+    if (row.classList.contains('task-done')) {
+      row.classList.remove('task-done');
+      row.style.borderLeftColor = '#3f3f46';
+      box.innerHTML = '';
+      box.style.borderColor = '#71717a';
+    } else {
+      row.classList.add('task-done');
+      row.style.borderLeftColor = color;
+      box.innerHTML = `<svg class="w-4 h-4 text-[${color}]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>`;
+      box.style.borderColor = color;
+      box.querySelector('svg').style.color = color;
+    }
+    syncTelemetry();
+  }
 
-    // Calculate individual phase segments for tracking rings
-    const p1Done = document.querySelectorAll('#blockPhase1 .task-card.executed').length;
-    const p2Done = document.querySelectorAll('#blockPhase2 .task-card.executed').length;
-    const p3Done = document.querySelectorAll('#blockPhase3 .task-card.executed').length;
+  function syncTelemetry() {
+    // 1. Calculate Phase 1 (Only "matched" counts towards progress)
+    let p1Matched = 0;
+    napSources.forEach(s => {
+      if(document.getElementById(`row-${s.id}`).classList.contains('state-matched')) p1Matched++;
+    });
+    const pctP1 = p1Matched / napSources.length;
+    
+    // 2. Calculate Phase 2
+    let p2Done = 0;
+    repTasks.forEach(r => {
+      if(document.getElementById(`row-${r.id}`).classList.contains('task-done')) p2Done++;
+    });
+    const pctP2 = p2Done / repTasks.length;
 
-    const pctP1 = p1Done / 4;
-    const pctP2 = p2Done / 3;
-    const pctP3 = p3Done / 2;
+    // 3. Calculate Phase 3
+    let p3Done = 0;
+    secTasks.forEach(s => {
+      if(document.getElementById(`row-${s.id}`).classList.contains('task-done')) p3Done++;
+    });
+    const pctP3 = p3Done / secTasks.length;
 
+    // Update Text
     document.getElementById('txtPctP1').textContent = `${Math.round(pctP1 * 100)}%`;
-    document.getElementById('txtPctP2').textContent = `${Math
+    document.getElementById('txtPctP2').textContent = `${Math.round(pctP2 * 100)}%`;
+    document.getElementById('txtPctP3').textContent = `${Math.round(pctP3 * 100)}%`;
+
+    // Update Rings
+    document.getElementById('ringP1').style.strokeDashoffset = 351.86 - (351.86 * pctP1);
+    document.getElementById('ringP2').style.strokeDashoffset = 276.46 - (276.46 * pctP2);
+    document.getElementById('ringP3').style.strokeDashoffset = 201.06 - (201.06 * pctP3);
+
+    // Update Financials
+    let baseRate = parseInt(document.getElementById('runtimeTier').value || 4000);
+    let conditionState = document.getElementById('runtimeVerification').value;
+    const banner = document.getElementById('safeguardIndicator');
+    
+    if (conditionState === 'exceeded') {
+      banner.classList.add('breached');
+      document.getElementById('metricsFinancials').textContent = `R ${(baseRate + 1000).toLocaleString('en-ZA')}`;
+      document.getElementById('metricsFinancials').style.color = 'var(--alert-red)';
+    } else {
+      banner.classList.remove('breached');
+      document.getElementById('metricsFinancials').textContent = `R ${baseRate.toLocaleString('en-ZA')}`;
+      document.getElementById('metricsFinancials').style.color = 'var(--platinum)';
+    }
+
+    saveState();
+  }
+
+  function saveState() {
+    const data = {
+      client: document.getElementById('runtimeClient').value,
+      tier: document.getElementById('runtimeTier').value,
+      verification: document.getElementById('runtimeVerification').value,
+      nap: {},
+      tasks: {}
+    };
+
+    napSources.forEach(s => {
+      const row = document.getElementById(`row-${s.id}`);
+      if(row.classList.contains('state-matched')) data.nap[s.id] = 'matched';
+      else if(row.classList.contains('state-mismatch')) data.nap[s.id] = 'mismatch';
+      else data.nap[s.id] = 'pending';
+    });
+
+    [...repTasks, ...secTasks].forEach(t => {
+      data.tasks[t.id] = document.getElementById(`row-${t.id}`).classList.contains('task-done');
+    });
+
+    localStorage.setItem('sp_ops_engine', JSON.stringify(data));
+  }
+
+  function hydrate() {
+    const saved = JSON.parse(localStorage.getItem('sp_ops_engine'));
+    if(saved) {
+      document.getElementById('runtimeClient').value = saved.client || '';
+      document.getElementById('runtimeTier').value = saved.tier || '4000';
+      document.getElementById('runtimeVerification').value = saved.verification || 'standard';
+      
+      napSources.forEach(s => { if(saved.nap[s.id]) setState(s.id, saved.nap[s.id]); });
+      
+      repTasks.forEach(r => { if(saved.tasks[r.id]) toggleTask(r.id, 'rep'); });
+      secTasks.forEach(s => { if(saved.tasks[s.id]) toggleTask(s.id, 'sec'); });
+    }
+    syncTelemetry();
+  }
+
+  function serializeLedger() {
+    const client = document.getElementById('runtimeClient').value || 'Unspecified Client';
+    const total = document.getElementById('metricsFinancials').textContent;
+    
+    let output = `[SEARCH PLAYBOOK] OPERATIONS LEDGER\n`;
+    output += `===================================\n`;
+    output += `Client: ${client}\n`;
+    output += `Financial Value: ${total}\n\n`;
+    
+    output += `PHASE 1: SOURCE OF TRUTH (NAP)\n`;
+    napSources.forEach(s => {
+      const row = document.getElementById(`row-${s.id}`);
+      let state = "PENDING";
+      if(row.classList.contains('state-matched')) state = "MATCHED";
+      if(row.classList.contains('state-mismatch')) state = "MISMATCH";
+      output += `- ${s.name}: ${state}\n`;
+    });
+
+    output += `\nPHASE 2: REPUTATION & CONTEXT\n`;
+    repTasks.forEach(r => {
+      const isDone = document.getElementById(`row-${r.id}`).classList.contains('task-done');
+      output += `[${isDone ? 'X' : ' '}] ${r.name}\n`;
+    });
+
+    output += `\nPHASE 3: ISOLATION & HARDENING\n`;
+    secTasks.forEach(s => {
+      const isDone = document.getElementById(`row-${s.id}`).classList.contains('task-done');
+      output += `[${isDone ? 'X' : ' '}] ${s.name}\n`;
+    });
+
+    navigator.clipboard.writeText(output).then(() => {
+      alert('Full Operational State copied to clipboard.');
+    });
+  }
+
+  function purgeData() {
+    if(confirm('Clear all local data and reset the dashboard?')) {
+      localStorage.removeItem('sp_ops_engine');
+      location.reload();
+    }
+  }
+
+  window.onload = renderDash;
+</script>
+
+</body>
+</html>
+
+
+```
