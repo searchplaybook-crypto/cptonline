@@ -1,321 +1,383 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CPTONLINE | Digital Sovereignty & Culture</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>CPTonline • Dark Mode Gap Analysis</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "LocalBusiness",
-  "name": "CPTONLINE",
-  "description": "Digital Birth Certificate and BGR EDUTainment guide for Cape Town Hip Hop culture.",
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "36 Cornflower Street",
-    "addressLocality": "Bridgetown, Athlone",
-    "addressRegion": "Cape Town",
-    "postalCode": "7764",
-    "addressCountry": "ZA"
-  }
-}
-</script>
+    /* Light/dark variables */
+    :root {
+      --bg: #0a0c12;
+      --surface: #11161f;
+      --surface-card: #1a1f2b;
+      --text: #edeef2;
+      --text-muted: #a0aaba;
+      --border: #2a2f3f;
+      --badge-bg-missing: #3b1e1e;
+      --badge-text-missing: #fecaca;
+      --badge-bg-unverified: #4a3a1a;
+      --badge-text-unverified: #ffe5b4;
+      --badge-bg-verified: #1e3a2a;
+      --badge-text-verified: #c0f0cf;
+      --gap-bg: #2a2418;
+      --card-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    body.light {
+      --bg: #f5f7fc;
+      --surface: #ffffff;
+      --surface-card: #ffffff;
+      --text: #1a1f2e;
+      --text-muted: #4a5568;
+      --border: #e2e8f0;
+      --badge-bg-missing: #fee2e2;
+      --badge-text-missing: #b91c1c;
+      --badge-bg-unverified: #fff3cd;
+      --badge-text-unverified: #856404;
+      --badge-bg-verified: #d4edda;
+      --badge-text-verified: #155724;
+      --gap-bg: #fef9e3;
+      --card-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
 
-<link rel="preconnect" href="https://cdn.jsdelivr.net">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/space-grotesk@latest/latin-700.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-500.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-600.css">
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding-bottom: 80px;
+      transition: background 0.2s, color 0.2s;
+    }
 
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: {
-          primary: '#2563EB',
-          gold: '#D4AF37',
-          ubuntu: '#E2B15C',
-          surface: '#111111',
-          ink: '#0A0A0A',
-        },
-        fontFamily: {
-          display: ['"Space Grotesk"', 'system-ui', 'sans-serif'],
-          body: ['Inter', 'system-ui', 'sans-serif'],
-        },
-      },
-    },
-  };
-</script>
+    .container {
+      max-width: 100%;
+      padding: 1rem;
+    }
 
-<style>
-  :root { --ease: cubic-bezier(.22,.61,.36,1); }
-  * { -webkit-font-smoothing: antialiased; }
-  body {
-    font-family: 'Inter', system-ui, sans-serif;
-    background: #0A0A0A;
-    color: #F1F5F9;
-    overflow-x: hidden;
-  }
-  h1, h2, h3, h4 { font-family: 'Space Grotesk', system-ui, sans-serif; letter-spacing: -0.02em; }
+    /* header top bar for theme toggle */
+    .theme-trigger {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 1rem;
+    }
+    .theme-toggle-btn {
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: 40px;
+      padding: 0.4rem 0.9rem;
+      cursor: pointer;
+      font-size: 0.8rem;
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
 
-  /* Immersive Aurora & Gridlines */
-  .aurora {
-    position: fixed; inset: 0; z-index: -2;
-    background:
-      radial-gradient(ellipse 80% 50% at 20% 0%, rgba(37,99,235,.15), transparent 60%),
-      radial-gradient(ellipse 60% 50% at 80% 20%, rgba(212,175,55,.10), transparent 60%);
-  }
-  .gridlines {
-    position: fixed; inset: 0; z-index: -1; opacity: 0.2;
-    background-image:
-      linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
-    background-size: 40px 40px;
-    mask-image: radial-gradient(ellipse 100% 100% at 50% 50%, black, transparent 80%);
-  }
+    .status-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      margin-left: 0.5rem;
+      vertical-align: middle;
+    }
+    .missing {
+      background: var(--badge-bg-missing);
+      color: var(--badge-text-missing);
+      border-left: 3px solid #ef4444;
+    }
+    .unverified {
+      background: var(--badge-bg-unverified);
+      color: var(--badge-text-unverified);
+      border-left: 3px solid #f59e0b;
+    }
+    .verified {
+      background: var(--badge-bg-verified);
+      color: var(--badge-text-verified);
+      border-left: 3px solid #10b981;
+    }
 
-  /* Glassmorphism Components */
-  .glass {
-    background: linear-gradient(180deg, rgba(255,255,255,.05) 0%, rgba(255,255,255,.01) 100%);
-    border: 1px solid rgba(255,255,255,.1);
-    backdrop-filter: blur(16px);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-  }
-  .glass-card {
-    transition: transform 0.4s var(--ease), border-color 0.4s var(--ease);
-  }
-  .glass-card:hover {
-    transform: translateY(-5px);
-    border-color: rgba(212,175,55,.4);
-  }
-
-  /* Reveal Animations */
-  .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.8s var(--ease), transform 0.8s var(--ease); }
-  .reveal.active { opacity: 1; transform: translateY(0); }
-
-  /* Floating Elements */
-  .whatsapp-float {
-    position: fixed; bottom: 30px; right: 30px; z-index: 100;
-    transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
-    animation: bob 3s ease-in-out infinite;
-  }
-  .whatsapp-float:hover {
-    transform: scale(1.1) translateY(-5px);
-    box-shadow: 0 15px 30px rgba(34, 197, 94, 0.4);
-  }
-  @keyframes bob { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);} }
-
-  /* Accordion */
-  .acc-body { max-height: 0; overflow: hidden; transition: max-height 0.5s var(--ease); }
-  .acc.open .acc-body { max-height: 400px; }
-  .acc.open .acc-icon { transform: rotate(180deg); }
-  .acc-icon { transition: transform 0.3s var(--ease); }
-
-  /* Custom Scrollbar */
-  ::-webkit-scrollbar { width: 8px; }
-  ::-webkit-scrollbar-track { background: #0A0A0A; }
-  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.2); border-radius: 4px; }
-  ::-webkit-scrollbar-thumb:hover { background: rgba(212,175,55,.5); }
-</style>
+    .card {
+      background: var(--surface-card);
+      border-radius: 1.5rem;
+      box-shadow: var(--card-shadow);
+      margin-bottom: 1.5rem;
+      padding: 1.2rem;
+      border: 1px solid var(--border);
+    }
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .gap-notice {
+      background: var(--gap-bg);
+      border-left: 4px solid #f59e0b;
+      padding: 0.75rem;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      margin: 1rem 0;
+    }
+    .btn-wa {
+      background: #25D366;
+      color: #0a0a0a;
+      border: none;
+      border-radius: 40px;
+      padding: 0.75rem 1.2rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      width: 100%;
+      justify-content: center;
+      margin-top: 0.8rem;
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #25D366;
+      color: #25D366;
+    }
+    .carousel-x {
+      display: flex;
+      overflow-x: auto;
+      gap: 1rem;
+      scroll-snap-type: x mandatory;
+      padding-bottom: 0.5rem;
+    }
+    .carousel-x video, .carousel-x img {
+      scroll-snap-align: start;
+      width: 260px;
+      border-radius: 1rem;
+      background: #2d3748;
+    }
+    .grid-2 {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    @media (min-width: 640px) {
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+      .btn-wa {
+        width: auto;
+      }
+    }
+    .video-embed {
+      margin-top: 0.5rem;
+      border-radius: 1rem;
+      overflow: hidden;
+      background: #000;
+    }
+    .video-embed iframe {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      display: block;
+    }
+    .floating-wa {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #25D366;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 100;
+      cursor: pointer;
+    }
+    .footer-note {
+      background: var(--surface);
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.75rem;
+      margin-top: 2rem;
+      border-top: 1px solid var(--border);
+    }
+    hr { margin: 1rem 0; border-color: var(--border); }
+    a { color: #2ef7d0; }
+  </style>
 </head>
+<body>
+<div class="container">
+  <!-- Dark mode trigger toggle -->
+  <div class="theme-trigger">
+    <button class="theme-toggle-btn" id="darkModeTrigger"><i class="fas fa-moon"></i> Dark / Light</button>
+  </div>
 
-<body class="antialiased selection:bg-gold selection:text-ink">
+  <!-- Header: BGR EDUTainment as source -->
+  <div class="card" style="background: linear-gradient(135deg, #0b1a2e, #0f212f); color: white; border: none;">
+    <img src="https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/b6e70c7b42f01120eb282a67415c715cd966447c/assets/cptlogo.jpg" style="height: 55px; border-radius: 12px; margin-bottom: 0.5rem;" alt="CPTonline logo">
+    <h1 style="font-size: 1.8rem; margin: 0.25rem 0;">Where locals get inspired</h1>
+    <p>Cape Town's heartbeat — powered by BGR EDUTainment. This mockup shows <strong>what's missing or unverified</strong> so we can grow together.</p>
+    <div class="status-badge unverified" style="margin-top: 0.8rem;"><i class="fas fa-exclamation-triangle"></i> DRAFT: Gap analysis mode</div>
+  </div>
 
-<div class="aurora"></div>
-<div class="gridlines"></div>
+  <!-- CAROUSEL -->
+  <div class="card">
+    <div class="section-title">🎬 Recent Moments <span class="status-badge missing">Missing: alt text & artist credits</span></div>
+    <div class="carousel-x">
+      <video src="https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/b6e70c7b42f01120eb282a67415c715cd966447c/assets/cptmerch0001.mp4" autoplay muted loop playsinline></video>
+      <video src="https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/b6e70c7b42f01120eb282a67415c715cd966447c/assets/cptmerch0002.mp4" autoplay muted loop playsinline></video>
+      <img src="https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/b6e70c7b42f01120eb282a67415c715cd966447c/assets/cptmerch1.jpg" alt="merch visual">
+      <img src="https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/b6e70c7b42f01120eb282a67415c715cd966447c/assets/cptmerch3.jpg" alt="nfc item">
+    </div>
+    <div class="gap-notice"><i class="fas fa-eye-slash"></i> <strong>Unverified:</strong> Video descriptions, artist tags, and NFC demonstration missing. Add captions & call-to-action.</div>
+  </div>
 
-<header class="sticky top-0 z-50 backdrop-blur-xl bg-ink/60 border-b border-white/5">
-  <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-    <div class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-gold to-ubuntu flex items-center justify-center shadow-lg shadow-gold/20">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L3 7v6c0 5 3.8 8.7 9 9 5.2-.3 9-4 9-9V7l-9-5z"/><path d="M9 12l2 2 4-4"/></svg>
+  <!-- BGR EDUTainment Content Feed with embedded Facebook videos -->
+  <div class="card">
+    <div class="section-title">🎤 From BGR EDUTainment <span class="status-badge unverified">Content added — engagement missing</span></div>
+    <div class="grid-2">
+      <div>
+        <div class="video-embed">
+          <iframe src="https://www.facebook.com/plugins/video.php?href=https%3A%2F%2Fwww.facebook.com%2Fshare%2Fv%2F1EyjfbAo2F%2F&show_text=0&width=560" frameborder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
+        </div>
+        <p style="margin-top: 0.5rem;"><strong>Storme K</strong> feat. DEMIGOD MINGO — "WILLING" <br> Produced by JaySquared, published by BGR Enterprise</p>
+        <span class="status-badge missing">Missing: stream stats & embedded call-to-action</span>
       </div>
       <div>
-        <div class="font-display font-bold text-xl tracking-tight">CPTONLINE</div>
-        <div class="text-[10px] text-gold/80 uppercase tracking-[.2em] -mt-1">Digital Birth Certificate</div>
+        <div class="video-embed">
+          <iframe src="https://www.facebook.com/plugins/video.php?href=https%3A%2F%2Fwww.facebook.com%2Fshare%2Fv%2F18vsV7fYDb%2F&show_text=0&width=560" frameborder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
+        </div>
+        <p style="margin-top: 0.5rem;"><strong>CapeVibe Reacts</strong> to "BAG UP" by MAKES THE STONER x DEMIGOD MINGO</p>
+        <span class="status-badge missing">Missing: YouTube original link & reaction embed</span>
+        <a href="https://youtu.be/EAksJ3FuGjs?si=2YHWmt0IHhA51LgH" target="_blank" style="display: inline-block; font-size: 0.75rem; margin-top: 0.3rem;">Watch original on YouTube →</a>
       </div>
     </div>
-    <nav class="hidden md:flex gap-8 text-sm font-medium text-slate-300">
-      <a href="#merch" class="hover:text-gold transition">Merch</a>
-      <a href="#bgr" class="hover:text-gold transition">BGR EDUTainment</a>
-      <a href="#about" class="hover:text-gold transition">About</a>
-      <a href="#faq" class="hover:text-gold transition">FAQ</a>
-      <a href="#location" class="hover:text-gold transition">Location</a>
-    </nav>
+    <div class="gap-notice">📌 <strong>What's lacking:</strong> Direct engagement links, shareable artist profiles, and WhatsApp integration for each video.</div>
+    <button class="btn-wa" id="bgrWABtn"><i class="fab fa-whatsapp"></i> Request full BGR content pack via WhatsApp</button>
   </div>
-</header>
 
-<main class="max-w-7xl mx-auto px-6 py-12 space-y-24">
-
-  <section id="merch" class="reveal pt-8">
-    <div class="text-center mb-12">
-      <h1 class="text-5xl md:text-7xl font-bold mb-4 bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">The Tangible Bridge</h1>
-      <p class="text-lg text-slate-400 max-w-2xl mx-auto">Physical assets powering your digital sovereignty. Tap to verify.</p>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <div class="glass glass-card rounded-3xl overflow-hidden relative group aspect-[4/5]">
-        <video autoplay loop muted playsinline class="w-full h-full object-cover">
-          <source src="cptmerch0001.mp4" type="video/mp4">
-        </video>
-        <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent">
-          <div class="text-xs font-bold text-gold mb-1">NFC Activation</div>
-          <div class="text-sm font-medium">Digital Coaster Sync</div>
-        </div>
+  <!-- Artist Spotlight incomplete -->
+  <div class="card">
+    <div class="section-title">✨ Local Inspiration <span class="status-badge missing">No verified artist pages</span></div>
+    <div class="grid-2">
+      <div style="background: var(--surface); padding: 0.8rem; border-radius: 1rem;">
+        <strong>DEMIGOD MINGO</strong>
+        <p style="font-size: 0.85rem;">"BAG UP" single out. <span class="status-badge missing">Missing: bio, social links, NFC merch demo</span></p>
       </div>
-      
-      <div class="glass glass-card rounded-3xl overflow-hidden relative group aspect-[4/5]">
-        <video autoplay loop muted playsinline class="w-full h-full object-cover">
-          <source src="cptmerch0002.mp4" type="video/mp4">
-        </video>
-        <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent">
-          <div class="text-xs font-bold text-primary mb-1">Apparel Drop</div>
-          <div class="text-sm font-medium">CPT Planet Hoodie</div>
-        </div>
-      </div>
-
-      <div class="glass glass-card rounded-3xl overflow-hidden relative group aspect-[4/5]">
-        <video autoplay loop muted playsinline class="w-full h-full object-cover">
-          <source src="cptmerch0003.mp4" type="video/mp4">
-        </video>
-        <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent">
-          <div class="text-xs font-bold text-gold mb-1">Apparel Drop</div>
-          <div class="text-sm font-medium">Die Kaap Shirt</div>
-        </div>
-      </div>
-
-      <div class="glass glass-card rounded-3xl overflow-hidden relative group aspect-[4/5]">
-        <video autoplay loop muted playsinline class="w-full h-full object-cover">
-          <source src="cptmerch0004.mp4" type="video/mp4">
-        </video>
-        <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent">
-          <div class="text-xs font-bold text-primary mb-1">Audio Bridge</div>
-          <div class="text-sm font-medium">NFC Album Keyring</div>
-        </div>
+      <div style="background: var(--surface); padding: 0.8rem; border-radius: 1rem;">
+        <strong>Storme K</strong>
+        <p style="font-size: 0.85rem;">"Willing" ft. DEMIGOD MINGO. <span class="status-badge missing">No streaming stats, no event schedule</span></p>
       </div>
     </div>
-  </section>
+    <div class="gap-notice"><i class="fas fa-id-card"></i> Artists need verified digital presence (photos, consistent NAP, show dates). WhatsApp integration missing for direct fan engagement.</div>
+  </div>
 
-  <section id="bgr" class="reveal">
-    <div class="glass rounded-[2.5rem] p-8 md:p-12 border-l-4 border-gold">
-      <div class="flex flex-col lg:flex-row gap-12 items-center">
-        <div class="lg:w-1/3 space-y-6">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold/10 border border-gold/20 text-gold text-xs font-bold uppercase tracking-wider">
-            <span class="w-2 h-2 rounded-full bg-gold animate-pulse"></span> Streaming Now
-          </div>
-          <h2 class="text-4xl font-bold">BGR EDUTainment</h2>
-          <p class="text-slate-300 leading-relaxed">The content engine driving the culture. Watch the latest drops, podcasts, and deep dives directly from the source.</p>
-        </div>
-        <div class="lg:w-2/3 w-full">
-          <div class="aspect-video bg-black rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-black">
-            <iframe class="w-full h-full" src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=0&rel=0" title="BGR EDUTainment" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-          </div>
-        </div>
-      </div>
+  <!-- Podcasts -->
+  <div class="card">
+    <div class="section-title">🎙️ CapeVibe Podcasts <span class="status-badge unverified">Episode placeholders only</span></div>
+    <ul style="list-style: none; padding-left: 0;">
+      <li style="padding: 0.5rem 0;"><i class="fab fa-facebook"></i> Episode 1: Artist Spotlight — <span class="status-badge missing">No audio embed / link</span></li>
+      <li style="padding: 0.5rem 0;"><i class="fab fa-whatsapp"></i> Episode 2: CapeVibe Reacts — <span class="status-badge missing">WhatsApp audio not published</span></li>
+      <li style="padding: 0.5rem 0;"><i class="fas fa-link"></i> Episode 3: Community Stories — <span class="status-badge missing">No RSS feed</span></li>
+    </ul>
+    <button class="btn-wa btn-outline" id="podcastGapBtn"><i class="fab fa-whatsapp"></i> Tell us which episodes are missing →</button>
+  </div>
+
+  <!-- NFC Merch -->
+  <div class="card">
+    <div class="section-title">🏷️ NFC Tangible Merch <span class="status-badge missing">No functional NFC demo / shop</span></div>
+    <div class="grid-2">
+      <div><img src="https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/b6e70c7b42f01120eb282a67415c715cd966447c/assets/cptmerch2.jpg" style="width:100%; border-radius: 1rem;" alt="NFC Graphic Tee"></div>
+      <div><img src="https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/b6e70c7b42f01120eb282a67415c715cd966447c/assets/cptmerch4.jpg" style="width:100%; border-radius: 1rem;" alt="NFC Coaster"></div>
     </div>
-  </section>
+    <p><strong>What's missing:</strong> Actual NFC chip simulation, product pricing, event integration, WhatsApp cart automation. The "Tangible Bridge" is not yet demonstrated.</p>
+    <button class="btn-wa" id="nfcGapBtn"><i class="fab fa-whatsapp"></i> Request NFC demo / ordering via WhatsApp</button>
+  </div>
 
-  <section class="reveal grid md:grid-cols-2 gap-8">
-    
-    <div id="about" class="glass glass-card rounded-[2.5rem] p-10 flex flex-col justify-center">
-      <h3 class="text-3xl font-bold mb-6">About the Movement</h3>
-      <p class="text-slate-300 leading-relaxed mb-6">
-        CPTONLINE is more than a digital storefront. It is a verifiable, sovereign digital identity anchored in Cape Town. 
-        By utilizing NFC-tagged merchandise, we bridge the gap between physical support and digital presence.
-      </p>
-      <p class="text-slate-300 leading-relaxed">
-        Every piece of merch acts as a key to exclusive audio, video, and community ledgers, establishing an unbreakable entity graph for local artists and creators.
-      </p>
-    </div>
+  <!-- Social proof -->
+  <div class="card">
+    <div class="section-title">📢 Community Proof <span class="status-badge unverified">Needs testimonials & user-generated content</span></div>
+    <p><i class="fas fa-quote-left"></i> “My NFC keyring sold out” — <strong>DEMIGOD MINGO</strong> <span class="status-badge missing">Unverified quote, no source</span></p>
+    <p><i class="fas fa-quote-left"></i> “CPTonline turned my music into merch” — <strong>Storme K</strong> <span class="status-badge missing">Missing: screenshot or video testimony</span></p>
+    <div class="gap-notice">Add real testimonials, event photos, and links to Facebook reactions from BGR EDUTainment.</div>
+  </div>
 
-    <div id="faq" class="glass rounded-[2.5rem] p-10">
-      <h3 class="text-3xl font-bold mb-8">FAQ</h3>
-      <div class="space-y-4">
-        
-        <div class="acc border border-white/10 rounded-2xl bg-white/5 overflow-hidden">
-          <button class="w-full px-6 py-4 flex items-center justify-between text-left font-semibold focus:outline-none" onclick="this.parentElement.classList.toggle('open')">
-            <span>How do I use the NFC Keyring?</span>
-            <svg class="acc-icon w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-          </button>
-          <div class="acc-body px-6">
-            <p class="pb-4 text-sm text-slate-400">Ensure your smartphone has NFC enabled. Tap the top back of your phone directly against the keyring to instantly launch the associated digital album or content.</p>
-          </div>
-        </div>
+  <!-- Location & contact -->
+  <div class="card">
+    <div class="section-title">📍 Location & Contact <span class="status-badge unverified">Info exists but not linked to Google Maps</span></div>
+    <p>36 Cornflower Street, Bridgetown, Athlone, Cape Town, 7764</p>
+    <p><i class="fab fa-whatsapp"></i> WhatsApp line: <strong>not yet active on site</strong> <span class="status-badge missing">Missing clickable WA link</span></p>
+    <p><i class="fab fa-facebook"></i> <a href="https://www.facebook.com/bgredutainment" target="_blank">BGR EDUTainment FB</a> <span class="status-badge verified">Page exists</span> but no direct messenger integration.</p>
+    <button class="btn-wa" id="contactGapBtn"><i class="fab fa-whatsapp"></i> Verify & update my contact info</button>
+  </div>
 
-        <div class="acc border border-white/10 rounded-2xl bg-white/5 overflow-hidden">
-          <button class="w-full px-6 py-4 flex items-center justify-between text-left font-semibold focus:outline-none" onclick="this.parentElement.classList.toggle('open')">
-            <span>What is the BGR EDUTainment engine?</span>
-            <svg class="acc-icon w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-          </button>
-          <div class="acc-body px-6">
-            <p class="pb-4 text-sm text-slate-400">It is the central content hub that updates dynamically. It syndicates podcasts, interviews, and music directly to the CPTONLINE platform to maintain an active digital footprint.</p>
-          </div>
-        </div>
+  <!-- Growth checklist -->
+  <div class="card" style="background: var(--gap-bg);">
+    <div class="section-title">📋 Client Growth Checklist</div>
+    <ul style="margin-left: 1.2rem;">
+      <li>✅ Basic assets (logo, videos) — present</li>
+      <li>✅ Two Facebook videos embedded — content added</li>
+      <li>❌ Missing: Podcast RSS / full episodes</li>
+      <li>❌ Missing: Live NFC demo or video walkthrough</li>
+      <li>❌ Missing: Artist onboarding form (WhatsApp trigger)</li>
+      <li>❌ Missing: Verified testimonials & case studies</li>
+      <li>❌ Missing: E‑commerce cart (WhatsApp flow not yet mapped)</li>
+    </ul>
+    <hr>
+    <p><strong>Next step:</strong> Use this mockup to prioritize what to build first. The floating WhatsApp button below is a placeholder — replace with your business line.</p>
+    <button class="btn-wa" id="growthWABtn"><i class="fab fa-whatsapp"></i> Discuss gaps & roadmap</button>
+  </div>
+</div>
 
-        <div class="acc border border-white/10 rounded-2xl bg-white/5 overflow-hidden">
-          <button class="w-full px-6 py-4 flex items-center justify-between text-left font-semibold focus:outline-none" onclick="this.parentElement.classList.toggle('open')">
-            <span>Do I need an app to scan the merch?</span>
-            <svg class="acc-icon w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-          </button>
-          <div class="acc-body px-6">
-            <p class="pb-4 text-sm text-slate-400">No. Modern iOS and Android devices read NFC tags natively without requiring any third-party applications.</p>
-          </div>
-        </div>
+<!-- Floating WhatsApp button -->
+<div class="floating-wa" id="floatingWA">
+  <i class="fab fa-whatsapp fa-2x" style="color: white;"></i>
+</div>
 
-      </div>
-    </div>
-  </section>
-
-  <section id="location" class="reveal">
-    <div class="glass rounded-[2.5rem] overflow-hidden flex flex-col md:flex-row">
-      <div class="md:w-1/3 p-10 bg-white/5 flex flex-col justify-center">
-        <div class="w-12 h-12 rounded-full bg-gold/20 flex items-center justify-center mb-6 text-gold">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-        </div>
-        <h3 class="text-2xl font-bold mb-2">Entity Verification</h3>
-        <p class="text-slate-400 text-sm mb-6">Anchoring the digital framework into real-world coordinates.</p>
-        <address class="not-italic text-sm font-medium text-slate-200 space-y-1 pl-4 border-l-2 border-gold">
-          <p>36 Cornflower Street</p>
-          <p>Bridgetown, Athlone</p>
-          <p>Cape Town, 7764</p>
-          <p>South Africa</p>
-        </address>
-      </div>
-      <div class="md:w-2/3 min-h-[400px]">
-        <iframe 
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3308.8258287738244!2d18.5255!3d-33.9515!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1dcc5b4d4b17f525%3A0x6b8f36c56b0c2e3!2sBridgetown%2C%20Cape%20Town!5e0!3m2!1sen!2sza!4v1717800000000!5m2!1sen!2sza" 
-          width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" class="w-full h-full grayscale opacity-80 hover:grayscale-0 hover:opacity-100 transition duration-500">
-        </iframe>
-      </div>
-    </div>
-  </section>
-
-</main>
-
-<footer class="border-t border-white/10 mt-12 py-8 text-center text-xs text-slate-500 uppercase tracking-widest relative z-10">
-  <p>© 2026 CPTONLINE. Digital Sovereignty powered by <a href="https://wemustcreateza.my.canva.site/" class="text-gold hover:text-white transition">WeMustCreate</a>.</p>
-</footer>
-
-<a href="https://wa.me/27000000000" target="_blank" rel="noopener noreferrer" class="whatsapp-float bg-green-500 p-4 rounded-full shadow-lg flex items-center justify-center">
-  <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
-    <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.099.824zm-3.423-14.416c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm.082 21.368c-1.503 0-2.949-.38-4.25-1.108l-4.717 1.24 1.264-4.598c-.808-1.341-1.235-2.883-1.235-4.475 0-4.936 4.015-8.951 8.951-8.951 4.936 0 8.952 4.016 8.952 8.952 0 4.936-4.015 8.94-8.965 8.94z"/>
-  </svg>
-</a>
+<div class="footer-note">
+  <i class="fas fa-chart-line"></i> Dark mode mockup — Gap analysis for CPTonline / BGR EDUTainment. Show clients what's missing.
+</div>
 
 <script>
-  // Intersection Observer for scroll animations
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('active');
-      }
-    });
-  }, { threshold: 0.1 });
+  // Dark mode trigger
+  const triggerBtn = document.getElementById('darkModeTrigger');
+  triggerBtn.addEventListener('click', () => {
+    document.body.classList.toggle('light');
+    const icon = triggerBtn.querySelector('i');
+    if (document.body.classList.contains('light')) {
+      icon.classList.remove('fa-moon');
+      icon.classList.add('fa-sun');
+    } else {
+      icon.classList.remove('fa-sun');
+      icon.classList.add('fa-moon');
+    }
+  });
 
-  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  // WhatsApp number — replace with client's actual number for real testing
+  const WA_NUMBER = "27781234567"; // placeholder
+
+  function openWA(text) {
+    const encoded = encodeURIComponent(text);
+    window.open(`https://wa.me/${WA_NUMBER}?text=${encoded}`, '_blank');
+  }
+
+  document.getElementById('bgrWABtn')?.addEventListener('click', () => openWA("Hi CPTonline, I saw the BGR EDUTainment Facebook videos are embedded but missing engagement links. Please send the full artist pack & podcast episodes."));
+  document.getElementById('podcastGapBtn')?.addEventListener('click', () => openWA("Which podcast episodes are missing? I can help publish CapeVibe episodes with proper RSS."));
+  document.getElementById('nfcGapBtn')?.addEventListener('click', () => openWA("Request NFC demo & WhatsApp ordering system for tangible merch."));
+  document.getElementById('contactGapBtn')?.addEventListener('click', () => openWA("Let's verify the address and add clickable WhatsApp button to the live site."));
+  document.getElementById('growthWABtn')?.addEventListener('click', () => openWA("I reviewed the gap analysis. Let's prioritize missing elements for the local inspiration hub."));
+  document.getElementById('floatingWA')?.addEventListener('click', () => openWA("👋 Found a gap in the CPTonline mockup — let's discuss how to fill verified content."));
 </script>
-
 </body>
 </html>
