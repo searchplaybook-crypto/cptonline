@@ -4,7 +4,7 @@
 
 **Grassroots community-based company from Cape Town, South Africa** pushing local music the old school way — selling MP3s, streetwear, and assisting artists with DSP distribution.
 
-🔗 **Live**: https://searchplaybook-crypto.github.io/cptonline/checklist.html  
+🔗 **Live**: https://searchplaybook-crypto.github.io/cptonline/index.html  
 🎵 **YouTube**: [@CPTPLANET](https://www.youtube.com/@CPTPLANET)  
 👥 **Human in the Loop**: [WeMustCreate](https://searchplaybook-crypto.github.io/SearchPlaybook/)
 
