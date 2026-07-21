@@ -193,11 +193,11 @@
     50% { opacity: 1; }
   }
 
-  /* ─── 3D Canvas ── */
+  /* ─── 3D Canvas (torus only, no particles) ── */
   #canvas-container {
     position: fixed; inset: 0; z-index: 2;
     pointer-events: none;
-    opacity: 0.7;
+    opacity: 0.9;
   }
   #canvas-container canvas { display: block; width: 100%; height: 100%; }
 
@@ -285,10 +285,10 @@
     font-size: 10px; font-weight: 700; margin-left: 6px;
   }
 
-  /* ─── Main Content ── */
+  /* ─── Main Content ─── */
   main { position: relative; z-index: 4; }
 
-  /* ── Hero ─── */
+  /* ─── Hero ─── */
   #hero {
     min-height: 100vh; display: flex; align-items: center;
     padding: 120px 48px 80px; position: relative;
@@ -624,7 +624,7 @@
     font-family: 'Space Grotesk', sans-serif;
   }
 
-  /* ─── Footer ── */
+  /* ─── Footer ─── */
   footer {
     padding: 80px 48px 40px;
     border-top: 1px solid var(--glass-border);
@@ -657,7 +657,7 @@
   }
   .footer-address { font-style: normal; line-height: 1.6; }
 
-  /* ── Cart Drawer ─── */
+  /* ─── Cart Drawer ─── */
   .cart-overlay {
     position: fixed; inset: 0; z-index: 200;
     background: rgba(0,0,0,0.7);
@@ -773,7 +773,7 @@
 <!-- Blue Overlay -->
 <div id="bg-blue-overlay"></div>
 
-<!-- 3D Canvas (particles) -->
+<!-- 3D Canvas (torus only) -->
 <div id="canvas-container"></div>
 
 <!-- Noise Overlay -->
@@ -852,9 +852,7 @@
 
     <div class="carousel-section">
       <div class="carousel-container">
-        <div class="carousel" id="playlistCarousel">
-          <!-- Carousel items injected by JS -->
-        </div>
+        <div class="carousel" id="playlistCarousel"></div>
       </div>
     </div>
   </section>
@@ -928,136 +926,36 @@
 
 <script>
 // ── WhatsApp Configuration ───
-const WHATSAPP_NUMBER = '27000000000'; // Replace with actual CPTonline WhatsApp number
+const WHATSAPP_NUMBER = '27000000000';
 const WHATSAPP_BASE = `https://wa.me/${WHATSAPP_NUMBER}`;
 
-// ── Playlist UGC Data (Extracted from deployed site) ───
+// ── Playlist UGC Data ───
 const playlistItems = [
-  {
-    num: 'CH 01',
-    name: 'Storme K — WILLING',
-    desc: 'Official Music Video featuring DEMIGOD MINGO. Visualizer from the underground.',
-    youtubeId: 'dQw4w9WgXcQ'
-  },
-  {
-    num: 'CH 02',
-    name: 'CapeVibe Reacts — BAG UP',
-    desc: 'The flagship reaction show. Real takes on the hottest music dropping in the Cape.',
-    youtubeId: 'dQw4w9WgXcQ'
-  },
-  {
-    num: 'CH 03',
-    name: 'Underground Drops',
-    desc: 'Fresh releases from local artists. Independent and raw.',
-    youtubeId: 'dQw4w9WgXcQ'
-  },
-  {
-    num: 'CH 04',
-    name: 'Freestyle Fridays',
-    desc: 'Raw freestyles from the streets of Cape Town.',
-    youtubeId: 'dQw4w9WgXcQ'
-  },
-  {
-    num: 'CH 05',
-    name: 'Producer Corner',
-    desc: 'Behind the beats with CPT\'s finest producers.',
-    youtubeId: 'dQw4w9WgXcQ'
-  },
-  {
-    num: 'CH 06',
-    name: 'Street Stories',
-    desc: 'Community narratives and culture from the Cape.',
-    youtubeId: 'dQw4w9WgXcQ'
-  },
-  {
-    num: 'CH 07',
-    name: 'Live Sets',
-    desc: 'Recorded live performances from local venues.',
-    youtubeId: 'dQw4w9WgXcQ'
-  },
-  {
-    num: 'CH 08',
-    name: 'Community Mix',
-    desc: 'Curated by the community, for the community.',
-    youtubeId: 'dQw4w9WgXcQ'
-  }
+  { num: 'CH 01', name: 'Storme K — WILLING', desc: 'Official Music Video featuring DEMIGOD MINGO. Visualizer from the underground.', youtubeId: 'dQw4w9WgXcQ' },
+  { num: 'CH 02', name: 'CapeVibe Reacts — BAG UP', desc: 'The flagship reaction show. Real takes on the hottest music dropping in the Cape.', youtubeId: 'dQw4w9WgXcQ' },
+  { num: 'CH 03', name: 'Underground Drops', desc: 'Fresh releases from local artists. Independent and raw.', youtubeId: 'dQw4w9WgXcQ' },
+  { num: 'CH 04', name: 'Freestyle Fridays', desc: 'Raw freestyles from the streets of Cape Town.', youtubeId: 'dQw4w9WgXcQ' },
+  { num: 'CH 05', name: 'Producer Corner', desc: 'Behind the beats with CPT\'s finest producers.', youtubeId: 'dQw4w9WgXcQ' },
+  { num: 'CH 06', name: 'Street Stories', desc: 'Community narratives and culture from the Cape.', youtubeId: 'dQw4w9WgXcQ' },
+  { num: 'CH 07', name: 'Live Sets', desc: 'Recorded live performances from local venues.', youtubeId: 'dQw4w9WgXcQ' },
+  { num: 'CH 08', name: 'Community Mix', desc: 'Curated by the community, for the community.', youtubeId: 'dQw4w9WgXcQ' }
 ];
 
 // ── Merchandise Data ───
 const merchItems = [
-  {
-    id: 1,
-    name: 'SMART Mini CD (Custom)',
-    price: 120,
-    bulk: 100,
-    img: 'https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/main/assets/cptmerch1.jpg',
-    desc: 'Custom mini CD with your branding. Perfect for music releases.'
-  },
-  {
-    id: 2,
-    name: 'SMART Wristband',
-    price: 150,
-    bulk: 120,
-    img: 'https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/main/assets/wrist.jpg',
-    desc: 'Branded wristbands for events and merch drops.'
-  },
-  {
-    id: 3,
-    name: 'SMART Coasters',
-    price: 25,
-    bulk: 20,
-    video: 'https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/main/assets/cptmerch0001.mp4',
-    desc: 'Custom branded coasters. Great for venues and bars.'
-  },
-  {
-    id: 4,
-    name: 'BLACK/BLUE Smart Keychain',
-    price: 100,
-    bulk: 80,
-    img: 'https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/main/assets/tags.jpg',
-    desc: 'NFC-enabled smart keychains. Black and blue design.'
-  },
-  {
-    id: 5,
-    name: 'SMART CPT PLANET HOODIE',
-    price: 3500,
-    video: 'https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/main/assets/cptmerch0002.mp4',
-    poster: 'https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/main/assets/hoodiefront.jpg',
-    desc: 'Premium heavyweight hoodie with CPT Planet design.'
-  },
-  {
-    id: 6,
-    name: 'SMART KSA SHIRT',
-    price: 2500,
-    video: 'https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/main/assets/cptmerch0003.mp4',
-    poster: 'https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/main/assets/cptbeachshirt.jpg',
-    desc: 'Limited edition KSA shirt. Bold streetwear essential.'
-  }
+  { id: 1, name: 'SMART Mini CD (Custom)', price: 120, bulk: 100, img: 'https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/main/assets/cptmerch1.jpg', desc: 'Custom mini CD with your branding. Perfect for music releases.' },
+  { id: 2, name: 'SMART Wristband', price: 150, bulk: 120, img: 'https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/main/assets/wrist.jpg', desc: 'Branded wristbands for events and merch drops.' },
+  { id: 3, name: 'SMART Coasters', price: 25, bulk: 20, video: 'https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/main/assets/cptmerch0001.mp4', desc: 'Custom branded coasters. Great for venues and bars.' },
+  { id: 4, name: 'BLACK/BLUE Smart Keychain', price: 100, bulk: 80, img: 'https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/main/assets/tags.jpg', desc: 'NFC-enabled smart keychains. Black and blue design.' },
+  { id: 5, name: 'SMART CPT PLANET HOODIE', price: 3500, video: 'https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/main/assets/cptmerch0002.mp4', poster: 'https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/main/assets/hoodiefront.jpg', desc: 'Premium heavyweight hoodie with CPT Planet design.' },
+  { id: 6, name: 'SMART KSA SHIRT', price: 2500, video: 'https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/main/assets/cptmerch0003.mp4', poster: 'https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/main/assets/cptbeachshirt.jpg', desc: 'Limited edition KSA shirt. Bold streetwear essential.' }
 ];
 
-// ── Podcasts Data ───
+// ── Podcasts Data ──
 const podcasts = [
-  {
-    type: 'Artist Spotlight',
-    title: 'Storme K',
-    desc: 'Deep dive into the artistry and journey of one of Cape Town\'s most compelling voices.',
-    image: 'https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/main/assets/cptlogo.jpg',
-    status: 'Now Playing'
-  },
-  {
-    type: 'CapeVibe Reacts',
-    title: 'BAG UP',
-    desc: 'The flagship reaction show. Real takes on the hottest music dropping in the Cape.',
-    image: 'https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/main/assets/cptlogo.jpg',
-    status: 'New Episode'
-  },
-  {
-    type: 'Community Stories',
-    title: 'Coming Soon',
-    desc: 'Narratives from the heart of the community. Stories that need to be told.',
-    image: 'https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/main/assets/cptlogo.jpg',
-    status: 'Coming Soon'
-  }
+  { type: 'Artist Spotlight', title: 'Storme K', desc: 'Deep dive into the artistry and journey of one of Cape Town\'s most compelling voices.', image: 'https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/main/assets/cptlogo.jpg', status: 'Now Playing' },
+  { type: 'CapeVibe Reacts', title: 'BAG UP', desc: 'The flagship reaction show. Real takes on the hottest music dropping in the Cape.', image: 'https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/main/assets/cptlogo.jpg', status: 'New Episode' },
+  { type: 'Community Stories', title: 'Coming Soon', desc: 'Narratives from the heart of the community. Stories that need to be told.', image: 'https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/main/assets/cptlogo.jpg', status: 'Coming Soon' }
 ];
 
 // ── Cart State ───
@@ -1175,7 +1073,7 @@ function orderViaWhatsApp(itemId) {
   window.open(`${WHATSAPP_BASE}?text=${msg}`, '_blank');
 }
 
-// ─ Render Podcasts ───
+// ── Render Podcasts ───
 function renderPodcasts() {
   const grid = document.getElementById('podcastGrid');
   grid.innerHTML = podcasts.map(p => `
@@ -1200,7 +1098,7 @@ renderPlaylist();
 renderMerch();
 renderPodcasts();
 
-// ─── Three.js 3D Scene ───
+// ─── Three.js 3D Scene (Torus Knot Only — No Particles) ──
 const container = document.getElementById('canvas-container');
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -1212,65 +1110,42 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setClearColor(0x000000, 0);
 container.appendChild(renderer.domElement);
 
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+// Lights
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.25);
 scene.add(ambientLight);
 
-const blueLight = new THREE.PointLight(0x00d4ff, 2.5, 20);
+const blueLight = new THREE.PointLight(0x00d4ff, 3, 20);
 blueLight.position.set(3, 2, 3);
 scene.add(blueLight);
 
-const purpleLight = new THREE.PointLight(0x8b3dff, 2, 20);
+const purpleLight = new THREE.PointLight(0x8b3dff, 2.5, 20);
 purpleLight.position.set(-3, -2, 2);
 scene.add(purpleLight);
 
-const particleCount = 1500;
-const particleGeo = new THREE.BufferGeometry();
-const positions = new Float32Array(particleCount * 3);
-const colors = new Float32Array(particleCount * 3);
-
-for (let i = 0; i < particleCount; i++) {
-  const theta = Math.random() * Math.PI * 2;
-  const phi = Math.acos(2 * Math.random() - 1);
-  const r = 2 + Math.random() * 4;
-  positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
-  positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-  positions[i * 3 + 2] = r * Math.cos(phi);
-
-  const colorChoice = Math.random();
-  if (colorChoice < 0.5) {
-    colors[i * 3] = 0; colors[i * 3 + 1] = 0.83; colors[i * 3 + 2] = 1;
-  } else if (colorChoice < 0.8) {
-    colors[i * 3] = 0.55; colors[i * 3 + 1] = 0.24; colors[i * 3 + 2] = 1;
-  } else {
-    colors[i * 3] = 0; colors[i * 3 + 1] = 0.94; colors[i * 3 + 2] = 1;
-  }
-}
-
-particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-particleGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-
-const particleMat = new THREE.PointsMaterial({
-  size: 0.05, vertexColors: true, transparent: true, opacity: 0.7,
-  blending: THREE.AdditiveBlending, depthWrite: false
-});
-const particles = new THREE.Points(particleGeo, particleMat);
-scene.add(particles);
-
-const torusGeo = new THREE.TorusKnotGeometry(0.6, 0.2, 100, 24);
+// Torus Knot (hero 3D element)
+const torusGeo = new THREE.TorusKnotGeometry(0.8, 0.25, 128, 32);
 const torusMat = new THREE.MeshStandardMaterial({
-  color: 0x111111, metalness: 0.95, roughness: 0.15,
-  emissive: 0x00d4ff, emissiveIntensity: 0.2
+  color: 0x0a0e27,
+  metalness: 0.95,
+  roughness: 0.15,
+  emissive: 0x00d4ff,
+  emissiveIntensity: 0.25
 });
 const torusKnot = new THREE.Mesh(torusGeo, torusMat);
 scene.add(torusKnot);
 
-const wireGeo = new THREE.TorusKnotGeometry(0.65, 0.22, 50, 12);
+// Wireframe overlay
+const wireGeo = new THREE.TorusKnotGeometry(0.85, 0.27, 64, 16);
 const wireMat = new THREE.MeshBasicMaterial({
-  color: 0x00d4ff, wireframe: true, transparent: true, opacity: 0.2
+  color: 0x00f0ff,
+  wireframe: true,
+  transparent: true,
+  opacity: 0.25
 });
 const wireframe = new THREE.Mesh(wireGeo, wireMat);
 scene.add(wireframe);
 
+// Mouse tracking
 let mouseX = 0, mouseY = 0;
 let targetMouseX = 0, targetMouseY = 0;
 
@@ -1297,34 +1172,23 @@ function animate() {
   mouseX += (targetMouseX - mouseX) * 0.05;
   mouseY += (targetMouseY - mouseY) * 0.05;
 
-  particles.rotation.y = elapsed * 0.04 + mouseX * 0.3;
-  particles.rotation.x = mouseY * 0.2;
-
-  const pos = particleGeo.attributes.position.array;
-  for (let i = 0; i < particleCount; i++) {
-    const i3 = i * 3;
-    const x = pos[i3], y = pos[i3 + 1], z = pos[i3 + 2];
-    const dist = Math.sqrt(x * x + y * y + z * z);
-    const wave = Math.sin(dist * 2 - elapsed * 2) * 0.15;
-    pos[i3] += (x / dist) * wave * 0.01;
-    pos[i3 + 1] += (y / dist) * wave * 0.01;
-    pos[i3 + 2] += (z / dist) * wave * 0.01;
-  }
-  particleGeo.attributes.position.needsUpdate = true;
-
+  // Rotate torus
   torusKnot.rotation.x = elapsed * 0.15 + mouseY * 0.4;
   torusKnot.rotation.y = elapsed * 0.2 + mouseX * 0.4;
   wireframe.rotation.x = torusKnot.rotation.x;
   wireframe.rotation.y = torusKnot.rotation.y;
 
+  // Scroll velocity effect
   const velFactor = Math.min(scrollVelocity * 0.01, 0.5);
   torusKnot.rotation.z += velFactor * 0.1;
-  particles.rotation.z += velFactor * 0.05;
+  wireframe.rotation.z += velFactor * 0.1;
 
+  // Camera subtle movement
   camera.position.x = mouseX * 0.3;
   camera.position.y = -mouseY * 0.3;
   camera.lookAt(0, 0, 0);
 
+  // Light animation
   blueLight.position.x = Math.sin(elapsed * 0.5) * 3;
   blueLight.position.y = Math.cos(elapsed * 0.3) * 2;
   purpleLight.position.x = Math.cos(elapsed * 0.4) * 3;
@@ -1343,8 +1207,10 @@ window.addEventListener('resize', () => {
 
 // ── Lenis Smooth Scroll ───
 const lenis = new Lenis({
-  duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-  smooth: true, smoothTouch: false
+  duration: 1.2,
+  easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+  smooth: true,
+  smoothTouch: false
 });
 
 lenis.on('scroll', ScrollTrigger.update);
@@ -1363,7 +1229,9 @@ window.addEventListener('load', () => {
 document.getElementById('enterBtn').addEventListener('click', () => {
   const loader = document.getElementById('loader');
   gsap.to(loader, {
-    opacity: 0, duration: 0.8, ease: 'power2.inOut',
+    opacity: 0,
+    duration: 0.8,
+    ease: 'power2.inOut',
     onComplete: () => {
       loader.classList.add('hidden');
       animateHero();
