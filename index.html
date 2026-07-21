@@ -59,6 +59,7 @@
   "contactPoint": {
     "@type": "ContactPoint",
     "contactType": "customer service",
+    "telephone": "+27-71-740-5445",
     "availableLanguage": ["English", "Afrikaans", "Xhosa"]
   }
 }
@@ -193,7 +194,7 @@
     50% { opacity: 1; }
   }
 
-  /* ─── 3D Canvas (torus only, no particles) ── */
+  /* ─── 3D Canvas (torus only) ── */
   #canvas-container {
     position: fixed; inset: 0; z-index: 2;
     pointer-events: none;
@@ -484,6 +485,7 @@
     box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
     font-size: 28px;
     color: var(--bg-deep);
+    flex-shrink: 0;
   }
 
   .carousel-item h3 {
@@ -508,6 +510,91 @@
     text-transform: uppercase;
     margin-bottom: 0.5rem;
     font-family: 'Space Grotesk', sans-serif;
+  }
+
+  .carousel-item .play-hint {
+    font-size: 0.75rem;
+    color: var(--accent-cyan);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 1rem;
+    opacity: 0.7;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  /* ─── Video Modal ─── */
+  .video-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    background: rgba(6, 10, 31, 0.95);
+    backdrop-filter: blur(20px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s ease;
+    padding: 2rem;
+  }
+  .video-modal.open {
+    opacity: 1;
+    visibility: visible;
+  }
+  .video-modal-content {
+    width: 100%;
+    max-width: 1000px;
+    position: relative;
+    transform: scale(0.9);
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .video-modal.open .video-modal-content {
+    transform: scale(1);
+  }
+  .video-modal-close {
+    position: absolute;
+    top: -50px;
+    right: 0;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--accent-blue);
+    color: var(--fg);
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+  .video-modal-close:hover {
+    background: var(--accent-blue);
+    color: var(--bg-deep);
+  }
+  .video-modal-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.5rem;
+    color: var(--accent-blue);
+    margin-bottom: 1rem;
+  }
+  .video-wrapper {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 2px solid var(--accent-blue);
+    box-shadow: 0 20px 60px rgba(0, 212, 255, 0.3);
+    background: #000;
+  }
+  .video-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
   }
 
   /* ─── Merch ─── */
@@ -722,7 +809,7 @@
   }
   .btn-clear:hover { border-color: var(--accent-pink); color: var(--accent-pink); }
 
-  /* ─── Reveal ─── */
+  /* ─── Reveal ── */
   .reveal {
     opacity: 0; transform: translateY(40px);
     transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
@@ -744,6 +831,8 @@
     .merch-grid, .podcast-grid { grid-template-columns: 1fr; }
     .carousel-container { height: 300px; }
     .carousel-item { width: 200px; height: 280px; margin-left: -100px; margin-top: -140px; padding: 1.5rem; }
+    .video-modal { padding: 1rem; }
+    .video-modal-close { top: -45px; right: 0; }
   }
 
   ::-webkit-scrollbar { width: 6px; }
@@ -816,6 +905,15 @@
   </div>
 </div>
 
+<!-- Video Modal -->
+<div class="video-modal" id="videoModal">
+  <div class="video-modal-content">
+    <button class="video-modal-close" id="videoModalClose">✕</button>
+    <div class="video-modal-title" id="videoModalTitle"></div>
+    <div class="video-wrapper" id="videoModalWrapper"></div>
+  </div>
+</div>
+
 <main>
   <!-- Hero Section -->
   <section id="hero">
@@ -831,7 +929,7 @@
         Independent DSP distribution, digital tracks, exclusive streetwear & merch. Built by the community, for the community.
       </p>
       <div class="hero-actions reveal">
-        <a href="https://wa.me/27000000000?text=Hi%20CPTonline!%20I'm%20interested%20in%20your%20music%20and%20merch." class="btn-primary" target="_blank">Chat with us</a>
+        <a href="https://wa.me/27717405445?text=Hi%20CPTonline!%20I'm%20interested%20in%20your%20music%20and%20merch." class="btn-primary" target="_blank">Chat with us</a>
         <a href="#shop" class="btn-secondary">Shop Merch</a>
         <a href="#playlist" class="btn-secondary">Playlist</a>
       </div>
@@ -847,7 +945,7 @@
     <div class="section-header reveal">
       <div class="section-label">The CPTonline Playlist</div>
       <h2 class="section-title">Featured Drops</h2>
-      <p class="section-desc">Discover the voices of Cape Town's underground — hover over the 3D carousel to pause and explore the latest reactions and original drops.</p>
+      <p class="section-desc">Discover the voices of Cape Town's underground — hover over the 3D carousel to pause, click any card to play the video.</p>
     </div>
 
     <div class="carousel-section">
@@ -879,7 +977,7 @@
     <div class="podcast-grid" id="podcastGrid"></div>
 
     <div style="text-align: center; margin-top: 3rem;">
-      <a href="https://wa.me/27000000000?text=Hi%20CPTonline!%20I'd%20like%20to%20request%20an%20episode%20or%20collaborate." class="btn-secondary" target="_blank">Request episodes</a>
+      <a href="https://wa.me/27717405445?text=Hi%20CPTonline!%20I'd%20like%20to%20request%20an%20episode%20or%20collaborate." class="btn-secondary" target="_blank">Request episodes</a>
     </div>
   </section>
 </main>
@@ -899,7 +997,7 @@
     </div>
     <div class="footer-col">
       <h4>Connect</h4>
-      <a href="https://wa.me/27000000000" target="_blank">WhatsApp</a>
+      <a href="https://wa.me/27717405445" target="_blank">WhatsApp: +27 71 740 5445</a>
       <a href="#">Instagram</a>
       <a href="#">YouTube</a>
     </div>
@@ -926,10 +1024,10 @@
 
 <script>
 // ── WhatsApp Configuration ───
-const WHATSAPP_NUMBER = '27000000000';
+const WHATSAPP_NUMBER = '27717405445'; // +27 71 740 5445
 const WHATSAPP_BASE = `https://wa.me/${WHATSAPP_NUMBER}`;
 
-// ── Playlist UGC Data ───
+// ── Playlist UGC Data (with YouTube IDs for embedded play) ───
 const playlistItems = [
   { num: 'CH 01', name: 'Storme K — WILLING', desc: 'Official Music Video featuring DEMIGOD MINGO. Visualizer from the underground.', youtubeId: 'dQw4w9WgXcQ' },
   { num: 'CH 02', name: 'CapeVibe Reacts — BAG UP', desc: 'The flagship reaction show. Real takes on the hottest music dropping in the Cape.', youtubeId: 'dQw4w9WgXcQ' },
@@ -958,7 +1056,7 @@ const podcasts = [
   { type: 'Community Stories', title: 'Coming Soon', desc: 'Narratives from the heart of the community. Stories that need to be told.', image: 'https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/main/assets/cptlogo.jpg', status: 'Coming Soon' }
 ];
 
-// ── Cart State ───
+// ── Cart State ──
 let cart = [];
 
 function updateCartUI() {
@@ -1020,17 +1118,62 @@ document.getElementById('checkoutBtn').addEventListener('click', () => {
   window.open(`${WHATSAPP_BASE}?text=${msg}`, '_blank');
 });
 
+// ── Video Modal ───
+const videoModal = document.getElementById('videoModal');
+const videoModalTitle = document.getElementById('videoModalTitle');
+const videoModalWrapper = document.getElementById('videoModalWrapper');
+const videoModalClose = document.getElementById('videoModalClose');
+
+function openVideoModal(item) {
+  videoModalTitle.textContent = item.name;
+  videoModalWrapper.innerHTML = `
+    <iframe 
+      src="https://www.youtube.com/embed/${item.youtubeId}?autoplay=1&rel=0" 
+      title="${item.name}"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+      allowfullscreen>
+    </iframe>
+  `;
+  videoModal.classList.add('open');
+  // Pause carousel while video plays
+  document.querySelector('.carousel').style.animationPlayState = 'paused';
+}
+
+function closeVideoModal() {
+  videoModal.classList.remove('open');
+  videoModalWrapper.innerHTML = '';
+  document.querySelector('.carousel').style.animationPlayState = '';
+}
+
+videoModalClose.addEventListener('click', closeVideoModal);
+videoModal.addEventListener('click', (e) => {
+  if (e.target === videoModal) closeVideoModal();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && videoModal.classList.contains('open')) closeVideoModal();
+});
+
 // ── Render Playlist Carousel ───
 function renderPlaylist() {
   const carousel = document.getElementById('playlistCarousel');
   carousel.innerHTML = playlistItems.map(item => `
-    <div class="carousel-item" onclick="window.open('https://youtube.com/watch?v=${item.youtubeId}', '_blank')">
+    <div class="carousel-item" data-youtube="${item.youtubeId}" data-name="${item.name}">
       <div class="channel-num">${item.num}</div>
       <div class="play-icon">▶</div>
       <h3>${item.name}</h3>
       <p>${item.desc}</p>
+      <div class="play-hint">Click to play ▶</div>
     </div>
   `).join('');
+
+  // Attach click handlers
+  carousel.querySelectorAll('.carousel-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const youtubeId = el.getAttribute('data-youtube');
+      const name = el.getAttribute('data-name');
+      openVideoModal({ youtubeId, name });
+    });
+  });
 }
 
 // ── Render Merch ───
@@ -1098,7 +1241,7 @@ renderPlaylist();
 renderMerch();
 renderPodcasts();
 
-// ─── Three.js 3D Scene (Torus Knot Only — No Particles) ──
+// ─── Three.js 3D Scene (Torus Knot Only) ──
 const container = document.getElementById('canvas-container');
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -1110,7 +1253,6 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setClearColor(0x000000, 0);
 container.appendChild(renderer.domElement);
 
-// Lights
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.25);
 scene.add(ambientLight);
 
@@ -1122,7 +1264,6 @@ const purpleLight = new THREE.PointLight(0x8b3dff, 2.5, 20);
 purpleLight.position.set(-3, -2, 2);
 scene.add(purpleLight);
 
-// Torus Knot (hero 3D element)
 const torusGeo = new THREE.TorusKnotGeometry(0.8, 0.25, 128, 32);
 const torusMat = new THREE.MeshStandardMaterial({
   color: 0x0a0e27,
@@ -1134,7 +1275,6 @@ const torusMat = new THREE.MeshStandardMaterial({
 const torusKnot = new THREE.Mesh(torusGeo, torusMat);
 scene.add(torusKnot);
 
-// Wireframe overlay
 const wireGeo = new THREE.TorusKnotGeometry(0.85, 0.27, 64, 16);
 const wireMat = new THREE.MeshBasicMaterial({
   color: 0x00f0ff,
@@ -1145,7 +1285,6 @@ const wireMat = new THREE.MeshBasicMaterial({
 const wireframe = new THREE.Mesh(wireGeo, wireMat);
 scene.add(wireframe);
 
-// Mouse tracking
 let mouseX = 0, mouseY = 0;
 let targetMouseX = 0, targetMouseY = 0;
 
@@ -1172,23 +1311,19 @@ function animate() {
   mouseX += (targetMouseX - mouseX) * 0.05;
   mouseY += (targetMouseY - mouseY) * 0.05;
 
-  // Rotate torus
   torusKnot.rotation.x = elapsed * 0.15 + mouseY * 0.4;
   torusKnot.rotation.y = elapsed * 0.2 + mouseX * 0.4;
   wireframe.rotation.x = torusKnot.rotation.x;
   wireframe.rotation.y = torusKnot.rotation.y;
 
-  // Scroll velocity effect
   const velFactor = Math.min(scrollVelocity * 0.01, 0.5);
   torusKnot.rotation.z += velFactor * 0.1;
   wireframe.rotation.z += velFactor * 0.1;
 
-  // Camera subtle movement
   camera.position.x = mouseX * 0.3;
   camera.position.y = -mouseY * 0.3;
   camera.lookAt(0, 0, 0);
 
-  // Light animation
   blueLight.position.x = Math.sin(elapsed * 0.5) * 3;
   blueLight.position.y = Math.cos(elapsed * 0.3) * 2;
   purpleLight.position.x = Math.cos(elapsed * 0.4) * 3;
