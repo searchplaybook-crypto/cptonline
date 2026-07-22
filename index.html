@@ -1,0 +1,1505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPTonline · Cape Town's Home for Grassroots Music</title>
+    <link rel="icon" type="image/jpeg" href="https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/b6e70c7b42f01120eb282a67415c715cd966447c/assets/cptlogo.jpg">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-bg: #0a0e27;
+            --secondary-bg: #0f1535;
+            --accent-blue: #00d4ff;
+            --accent-cyan: #00f0ff;
+            --accent-purple: #8b3dff;
+            --accent-pink: #ff2d7b;
+            --text-primary: #ffffff;
+            --text-secondary: #a0aec0;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(0, 212, 255, 0.15);
+            --whatsapp-green: #25D366;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: auto;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Loader */
+        .loader {
+            position: fixed;
+            inset: 0;
+            background: var(--primary-bg);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 2rem;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .loader-wave {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            height: 60px;
+        }
+
+        .loader-wave span {
+            width: 4px;
+            background: linear-gradient(180deg, var(--accent-blue), var(--accent-purple));
+            border-radius: 2px;
+            animation: wave 1.2s ease-in-out infinite;
+        }
+
+        .loader-wave span:nth-child(1) { height: 20px; animation-delay: 0s; }
+        .loader-wave span:nth-child(2) { height: 35px; animation-delay: 0.1s; }
+        .loader-wave span:nth-child(3) { height: 50px; animation-delay: 0.2s; }
+        .loader-wave span:nth-child(4) { height: 35px; animation-delay: 0.3s; }
+        .loader-wave span:nth-child(5) { height: 20px; animation-delay: 0.4s; }
+
+        @keyframes wave {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(2.5); }
+        }
+
+        .loader-text {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.9rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+
+        /* Parallax Hero Background - ImageKit */
+        .hero-parallax {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: url('https://ik.imagekit.io/wemustcreate/bg-hero.png') center center / cover no-repeat;
+            z-index: -2;
+            will-change: transform;
+            filter: brightness(0.7) contrast(1.1) saturate(1.2);
+        }
+
+        .hero-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, 
+                rgba(10, 14, 39, 0.7) 0%, 
+                rgba(5, 8, 30, 0.8) 50%,
+                rgba(10, 14, 39, 0.85) 100%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Three.js Canvas Layer */
+        #three-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1.5rem 4rem;
+            background: rgba(10, 14, 39, 0.6);
+            backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid var(--glass-border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.4s ease;
+        }
+
+        nav.scrolled {
+            background: rgba(10, 14, 39, 0.95);
+            padding: 1rem 4rem;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.4rem;
+        }
+
+        .nav-logo img {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent-blue);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-blue);
+        }
+
+        .cart-btn {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1.5px solid var(--accent-blue);
+            color: var(--accent-blue);
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            transition: all 0.3s ease;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .cart-btn:hover {
+            background: rgba(0, 212, 255, 0.2);
+            box-shadow: 0 0 25px rgba(0, 212, 255, 0.4);
+        }
+
+        .cart-count {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+            color: var(--primary-bg);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        /* Hero Content */
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 8rem 2rem 4rem;
+        }
+
+        .hero-logo {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 2.5rem;
+            border: 4px solid var(--accent-blue);
+            box-shadow: 0 0 80px rgba(0, 212, 255, 0.6);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .hero-content h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-cyan) 50%, var(--accent-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.1;
+        }
+
+        .hero-content p {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 650px;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 1.2rem 2.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+            color: var(--primary-bg);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 212, 255, 0.6);
+        }
+
+        .btn-secondary {
+            background: rgba(0, 212, 255, 0.1);
+            color: var(--accent-blue);
+            border: 2px solid var(--accent-blue);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 212, 255, 0.2);
+            transform: translateY(-3px);
+        }
+
+        /* Split Layout Section */
+        .split-section {
+            position: relative;
+            z-index: 1;
+            padding: 6rem 2rem;
+            background: linear-gradient(180deg, 
+                rgba(10, 14, 39, 0.9) 0%, 
+                rgba(10, 14, 39, 0.95) 100%);
+            backdrop-filter: blur(20px);
+        }
+
+        .split-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+        }
+
+        .section-header {
+            grid-column: 1 / -1;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .section-tag {
+            display: inline-block;
+            padding: 0.6rem 1.5rem;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid var(--accent-blue);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: var(--accent-blue);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .section-header h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--text-primary), var(--accent-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+
+        /* YouTube Playlist - Left Side */
+        .playlist-container {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 2.5rem;
+            backdrop-filter: blur(20px);
+        }
+
+        .carousel-wrapper {
+            position: relative;
+            height: 450px;
+            perspective: 1000px;
+            overflow: hidden;
+        }
+
+        .carousel-3d {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            animation: rotateCarousel 35s linear infinite;
+        }
+
+        .carousel-3d:hover {
+            animation-play-state: paused;
+        }
+
+        @keyframes rotateCarousel {
+            from { transform: rotateY(0deg); }
+            to { transform: rotateY(360deg); }
+        }
+
+        .playlist-card {
+            position: absolute;
+            width: 260px;
+            height: 340px;
+            left: 50%;
+            top: 50%;
+            margin-left: -130px;
+            margin-top: -170px;
+            background: rgba(15, 21, 53, 0.8);
+            border: 2px solid var(--accent-blue);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            transition: all 0.4s ease;
+        }
+
+        .playlist-card:nth-child(1) { transform: rotateY(0deg) translateZ(400px); }
+        .playlist-card:nth-child(2) { transform: rotateY(45deg) translateZ(400px); }
+        .playlist-card:nth-child(3) { transform: rotateY(90deg) translateZ(400px); }
+        .playlist-card:nth-child(4) { transform: rotateY(135deg) translateZ(400px); }
+        .playlist-card:nth-child(5) { transform: rotateY(180deg) translateZ(400px); }
+        .playlist-card:nth-child(6) { transform: rotateY(225deg) translateZ(400px); }
+        .playlist-card:nth-child(7) { transform: rotateY(270deg) translateZ(400px); }
+        .playlist-card:nth-child(8) { transform: rotateY(315deg) translateZ(400px); }
+
+        .playlist-card:hover {
+            transform: rotateY(var(--rotY, 0deg)) translateZ(460px) scale(1.1);
+            box-shadow: 0 20px 60px rgba(0, 212, 255, 0.4);
+            border-color: var(--accent-cyan);
+            z-index: 10;
+        }
+
+        .playlist-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4);
+        }
+
+        .playlist-card h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.2rem;
+            margin-bottom: 0.8rem;
+            color: var(--text-primary);
+        }
+
+        .playlist-card p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Merch Grid - Right Side */
+        .merch-container {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 2.5rem;
+            backdrop-filter: blur(20px);
+        }
+
+        .merch-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .merch-card {
+            background: rgba(15, 21, 53, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .merch-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--accent-blue);
+            box-shadow: 0 15px 40px rgba(0, 212, 255, 0.2);
+        }
+
+        .merch-media {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(139, 61, 255, 0.1));
+        }
+
+        .merch-media video,
+        .merch-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .merch-info {
+            padding: 1.5rem;
+        }
+
+        .merch-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .merch-price {
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .price-current {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .btn-whatsapp {
+            width: 100%;
+            background: linear-gradient(135deg, var(--whatsapp-green), #128C7E);
+            color: white;
+            padding: 0.8rem;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .btn-whatsapp:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+        }
+
+        /* Cart Drawer */
+        .cart-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .cart-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .cart-drawer {
+            position: fixed;
+            top: 0;
+            right: -500px;
+            width: 500px;
+            max-width: 90vw;
+            height: 100vh;
+            background: linear-gradient(180deg, var(--secondary-bg), var(--primary-bg));
+            border-left: 2px solid var(--accent-blue);
+            z-index: 2000;
+            transition: right 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+            padding: 2.5rem;
+            overflow-y: auto;
+        }
+
+        .cart-drawer.open {
+            right: 0;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid var(--glass-border);
+        }
+
+        .cart-header h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.8rem;
+            color: var(--accent-blue);
+        }
+
+        .cart-close {
+            background: rgba(255, 255, 255, 0.05);
+            border: none;
+            color: var(--text-primary);
+            font-size: 2rem;
+            cursor: pointer;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .cart-close:hover {
+            background: rgba(0, 212, 255, 0.1);
+            color: var(--accent-blue);
+            transform: rotate(90deg);
+        }
+
+        .cart-items {
+            margin-bottom: 2.5rem;
+            min-height: 200px;
+        }
+
+        .cart-empty {
+            text-align: center;
+            color: var(--text-secondary);
+            padding: 4rem 0;
+        }
+
+        .cart-item {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .cart-item-media {
+            width: 70px;
+            height: 70px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(139, 61, 255, 0.2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .cart-item-price {
+            color: var(--accent-blue);
+            font-weight: 600;
+        }
+
+        .cart-item-remove {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+        }
+
+        .cart-item-remove:hover {
+            color: var(--accent-pink);
+        }
+
+        .cart-footer {
+            padding-top: 2rem;
+            border-top: 2px solid var(--glass-border);
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .cart-total span:last-child {
+            color: var(--accent-blue);
+        }
+
+        .btn-checkout {
+            width: 100%;
+            padding: 1.2rem;
+            background: linear-gradient(135deg, var(--whatsapp-green), #128C7E);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .btn-checkout:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(37, 211, 102, 0.5);
+        }
+
+        .btn-clear {
+            width: 100%;
+            padding: 1rem;
+            background: transparent;
+            border: 1.5px solid var(--glass-border);
+            color: var(--text-secondary);
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .btn-clear:hover {
+            border-color: var(--accent-pink);
+            color: var(--accent-pink);
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(10, 14, 39, 0.95);
+            border-top: 1px solid var(--glass-border);
+            padding: 4rem 2rem 3rem;
+            text-align: center;
+            backdrop-filter: blur(20px);
+        }
+
+        .footer-logo {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 1.5rem;
+            border: 3px solid var(--accent-blue);
+        }
+
+        .footer-address {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            font-style: normal;
+        }
+
+        .footer-copy {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Scroll Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .split-container {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .carousel-wrapper {
+                height: 350px;
+            }
+
+            .playlist-card {
+                width: 220px;
+                height: 300px;
+                margin-left: -110px;
+                margin-top: -150px;
+            }
+
+            .playlist-card:nth-child(1) { transform: rotateY(0deg) translateZ(350px); }
+            .playlist-card:nth-child(2) { transform: rotateY(45deg) translateZ(350px); }
+            .playlist-card:nth-child(3) { transform: rotateY(90deg) translateZ(350px); }
+            .playlist-card:nth-child(4) { transform: rotateY(135deg) translateZ(350px); }
+            .playlist-card:nth-child(5) { transform: rotateY(180deg) translateZ(350px); }
+            .playlist-card:nth-child(6) { transform: rotateY(225deg) translateZ(350px); }
+            .playlist-card:nth-child(7) { transform: rotateY(270deg) translateZ(350px); }
+            .playlist-card:nth-child(8) { transform: rotateY(315deg) translateZ(350px); }
+        }
+
+        @media (max-width: 640px) {
+            nav {
+                padding: 1rem 2rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .split-section {
+                padding: 4rem 1rem;
+            }
+
+            .playlist-container,
+            .merch-container {
+                padding: 2rem 1.5rem;
+            }
+
+            .merch-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loader -->
+    <div class="loader" id="loader">
+        <div class="loader-wave">
+            <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="loader-text">Loading Experience</div>
+    </div>
+
+    <!-- Parallax Hero Background -->
+    <div class="hero-parallax" id="heroParallax"></div>
+    <div class="hero-overlay"></div>
+
+    <!-- Three.js Canvas -->
+    <canvas id="three-canvas"></canvas>
+
+    <!-- Navigation -->
+    <nav id="mainNav">
+        <a href="#" class="nav-logo">
+            <img src="https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/b6e70c7b42f01120eb282a67415c715cd966447c/assets/cptlogo.jpg" alt="CPTonline">
+            CPTonline
+        </a>
+        <div class="nav-links">
+            <a href="#content">Explore</a>
+            <a href="#shop">Merch</a>
+            <button class="cart-btn" onclick="toggleCart()">
+                View Cart
+                <span class="cart-count" id="cartCount">0</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Content -->
+    <div class="hero-content">
+        <img src="https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/b6e70c7b42f01120eb282a67415c715cd966447c/assets/cptlogo.jpg" alt="CPTonline" class="hero-logo">
+        <h1>Cape Town's Home for<br>Grassroots Music</h1>
+        <p>Cape Town's home for grassroots music — independent DSP distribution, digital tracks, exclusive streetwear & merch.<br>Built by the community, for the community.</p>
+        <div class="hero-buttons">
+            <a href="#content" class="btn btn-primary">Explore Content</a>
+            <a href="#" class="btn btn-secondary">Chat with us</a>
+        </div>
+    </div>
+
+    <!-- Split Layout Section -->
+    <section class="split-section" id="content">
+        <div class="split-container">
+            <div class="section-header reveal">
+                <span class="section-tag">The CPTonline Playlist</span>
+                <h2>Featured Drops</h2>
+                <p>Discover the voices of Cape Town's underground. Hover over the 3D carousel to pause and explore.</p>
+            </div>
+
+            <!-- YouTube Playlist - Left -->
+            <div class="playlist-container reveal">
+                <div class="carousel-wrapper">
+                    <div class="carousel-3d">
+                        <div class="playlist-card">
+                            <div class="playlist-icon">▶</div>
+                            <h3>Storme K — WILLING</h3>
+                            <p>Official Music Video featuring DEMIGOD MINGO. Visualizer from the underground.</p>
+                        </div>
+                        <div class="playlist-card">
+                            <div class="playlist-icon">🎬</div>
+                            <h3>CapeVibe Reacts</h3>
+                            <p>BAG UP — Real takes on the hottest music dropping in the Cape.</p>
+                        </div>
+                        <div class="playlist-card">
+                            <div class="playlist-icon">🎵</div>
+                            <h3>Underground Drops</h3>
+                            <p>Fresh releases from local artists. Independent and raw.</p>
+                        </div>
+                        <div class="playlist-card">
+                            <div class="playlist-icon"></div>
+                            <h3>Freestyle Fridays</h3>
+                            <p>Raw freestyles from the streets of Cape Town.</p>
+                        </div>
+                        <div class="playlist-card">
+                            <div class="playlist-icon"></div>
+                            <h3>Producer Corner</h3>
+                            <p>Behind the beats with CPT's finest producers.</p>
+                        </div>
+                        <div class="playlist-card">
+                            <div class="playlist-icon">📖</div>
+                            <h3>Street Stories</h3>
+                            <p>Community narratives and culture from the Cape.</p>
+                        </div>
+                        <div class="playlist-card">
+                            <div class="playlist-icon"></div>
+                            <h3>Live Sets</h3>
+                            <p>Recorded live performances from local venues.</p>
+                        </div>
+                        <div class="playlist-card">
+                            <div class="playlist-icon"></div>
+                            <h3>Community Mix</h3>
+                            <p>Curated by the community, for the community.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Merchandise - Right -->
+            <div class="merch-container reveal" id="shop">
+                <div style="margin-bottom: 2rem; text-align: center;">
+                    <span class="section-tag">Local Merch</span>
+                    <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 2rem; margin-top: 1rem;">support the culture</h2>
+                </div>
+                <div class="merch-grid" id="merchGrid">
+                    <!-- Merch items rendered via JS -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <img src="https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/b6e70c7b42f01120eb282a67415c715cd966447c/assets/cptlogo.jpg" alt="CPTonline" class="footer-logo">
+        <address class="footer-address">36 Cornflower Street, Bridgetown, Athlone, Cape Town</address>
+        <p class="footer-copy">© 2026 CPTonline — Built by the community for the community</p>
+    </footer>
+
+    <!-- Cart Drawer -->
+    <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+    <div class="cart-drawer" id="cartDrawer">
+        <div class="cart-header">
+            <h2>Your Cart</h2>
+            <button class="cart-close" onclick="toggleCart()">×</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <div class="cart-empty">Your cart is empty.</div>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total</span>
+                <span id="cartTotal">R 0.00</span>
+            </div>
+            <button class="btn-checkout" onclick="checkout()">Checkout via WhatsApp</button>
+            <button class="btn-clear" onclick="clearCart()">Clear Cart</button>
+        </div>
+    </div>
+
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+    
+    <!-- Three.js Import Map -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.webgpu.js",
+                "three/webgpu": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.webgpu.js",
+                "three/tsl": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.tsl.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <!-- Main Application Script -->
+    <script type="module">
+        import * as THREE from 'three/webgpu';
+        import { pass } from 'three/tsl';
+        import { bloom } from 'three/addons/tsl/display/BloomNode.js';
+
+        // Merchandise Data
+        const merchItems = [
+            {
+                id: 1,
+                name: 'SMART Mini CD (Custom)',
+                price: 120,
+                bulk: 100,
+                img: 'https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/main/assets/cptmerch1.jpg'
+            },
+            {
+                id: 2,
+                name: 'SMART Wristband',
+                price: 150,
+                bulk: 120,
+                img: 'https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/main/assets/wrist.jpg'
+            },
+            {
+                id: 3,
+                name: 'SMART Coasters',
+                price: 25,
+                bulk: 20,
+                video: 'https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/main/assets/cptmerch0001.mp4'
+            },
+            {
+                id: 4,
+                name: 'BLACK/BLUE Smart Keychain',
+                price: 100,
+                bulk: 80,
+                img: 'https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/main/assets/tags.jpg'
+            },
+            {
+                id: 5,
+                name: 'SMART CPT PLANET HOODIE',
+                price: 3500,
+                video: 'https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/main/assets/cptmerch0002.mp4',
+                poster: 'https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/main/assets/hoodiefront.jpg'
+            },
+            {
+                id: 6,
+                name: 'SMART KSA SHIRT',
+                price: 2500,
+                video: 'https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/main/assets/cptmerch0003.mp4',
+                poster: 'https://raw.githubusercontent.com/searchplaybook-crypto/cptonline/main/assets/cptbeachshirt.jpg'
+            }
+        ];
+
+        // Cart State
+        let cart = [];
+
+        // Force hide loader after 3 seconds max
+        const loaderTimeout = setTimeout(() => {
+            const loader = document.getElementById('loader');
+            if (loader && !loader.classList.contains('hidden')) {
+                console.warn('Loader timeout - forcing hide');
+                loader.classList.add('hidden');
+            }
+        }, 3000);
+
+        window.addEventListener('load', () => {
+            console.log('Window loaded, initializing...');
+            setTimeout(() => {
+                try {
+                    const loader = document.getElementById('loader');
+                    if (loader) {
+                        loader.classList.add('hidden');
+                        console.log('Loader hidden');
+                    }
+                    initThreeJS();
+                    initAnimations();
+                    renderMerch();
+                    clearTimeout(loaderTimeout);
+                } catch (error) {
+                    console.error('Initialization error:', error);
+                    const loader = document.getElementById('loader');
+                    if (loader) loader.classList.add('hidden');
+                }
+            }, 1000);
+        });
+
+        // Initialize Lenis Smooth Scroll
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            smooth: true
+        });
+
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+
+        // GSAP ScrollTrigger
+        gsap.registerPlugin(ScrollTrigger);
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => {
+            lenis.raf(time * 1000);
+        });
+        gsap.ticker.lagSmoothing(0);
+
+        // Three.js WebGPU Setup with Bloom
+        let camera, renderer, renderPipeline;
+        let particles, speaker, wireframe, ring1, ring2;
+        let mouseX = 0, mouseY = 0;
+
+        async function initThreeJS() {
+            try {
+                const canvas = document.getElementById('three-canvas');
+                if (!canvas) {
+                    console.warn('Canvas not found, skipping Three.js');
+                    return;
+                }
+
+                const scene = new THREE.Scene();
+
+                camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                camera.position.set(0, 0, 5);
+                scene.add(camera);
+
+                // Lights
+                const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+                scene.add(ambientLight);
+
+                const pointLight1 = new THREE.PointLight(0x00d4ff, 100, 50);
+                pointLight1.position.set(3, 3, 3);
+                scene.add(pointLight1);
+
+                const pointLight2 = new THREE.PointLight(0x8b3dff, 100, 50);
+                pointLight2.position.set(-3, -3, 3);
+                scene.add(pointLight2);
+
+                // Particle System
+                const particleCount = 1500;
+                const geometry = new THREE.BufferGeometry();
+                const positions = new Float32Array(particleCount * 3);
+                const colors = new Float32Array(particleCount * 3);
+
+                for (let i = 0; i < particleCount; i++) {
+                    positions[i * 3] = (Math.random() - 0.5) * 10;
+                    positions[i * 3 + 1] = (Math.random() - 0.5) * 10;
+                    positions[i * 3 + 2] = (Math.random() - 0.5) * 10;
+
+                    const colorChoice = Math.random();
+                    if (colorChoice < 0.33) {
+                        colors[i * 3] = 0; colors[i * 3 + 1] = 0.83; colors[i * 3 + 2] = 1;
+                    } else if (colorChoice < 0.66) {
+                        colors[i * 3] = 0.55; colors[i * 3 + 1] = 0.24; colors[i * 3 + 2] = 1;
+                    } else {
+                        colors[i * 3] = 1; colors[i * 3 + 1] = 0.18; colors[i * 3 + 2] = 0.48;
+                    }
+                }
+
+                geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+                const material = new THREE.PointsMaterial({
+                    size: 0.05,
+                    vertexColors: true,
+                    transparent: true,
+                    opacity: 0.8,
+                    blending: THREE.AdditiveBlending
+                });
+
+                particles = new THREE.Points(geometry, material);
+                scene.add(particles);
+
+                // Floating Speaker
+                const speakerGeometry = new THREE.BoxGeometry(1.5, 1.5, 1.5);
+                const speakerMaterial = new THREE.MeshStandardMaterial({
+                    color: 0x000000,
+                    metalness: 0.95,
+                    roughness: 0.1,
+                    emissive: 0x00d4ff,
+                    emissiveIntensity: 2.5
+                });
+                speaker = new THREE.Mesh(speakerGeometry, speakerMaterial);
+                speaker.position.set(0, 0, -2);
+                scene.add(speaker);
+
+                // Wireframe
+                const wireGeometry = new THREE.BoxGeometry(1.6, 1.6, 1.6);
+                const wireMaterial = new THREE.MeshBasicMaterial({
+                    color: 0x00f0ff,
+                    wireframe: true,
+                    transparent: true,
+                    opacity: 0.3
+                });
+                wireframe = new THREE.Mesh(wireGeometry, wireMaterial);
+                scene.add(wireframe);
+
+                // Glow rings
+                const ringGeometry = new THREE.TorusGeometry(2, 0.05, 16, 100);
+                const ringMaterial = new THREE.MeshBasicMaterial({
+                    color: 0x00d4ff,
+                    transparent: true,
+                    opacity: 0.6
+                });
+                ring1 = new THREE.Mesh(ringGeometry, ringMaterial);
+                ring1.rotation.x = Math.PI / 2;
+                scene.add(ring1);
+
+                ring2 = new THREE.Mesh(ringGeometry, ringMaterial);
+                ring2.rotation.y = Math.PI / 2;
+                scene.add(ring2);
+
+                // Try WebGPU first, fallback to WebGL
+                let isWebGPU = false;
+                try {
+                    if (navigator.gpu) {
+                        renderer = new THREE.WebGPURenderer({ 
+                            canvas,
+                            antialias: true,
+                            alpha: true 
+                        });
+                        isWebGPU = true;
+                        console.log('Using WebGPU renderer');
+                    } else {
+                        throw new Error('WebGPU not supported');
+                    }
+                } catch (e) {
+                    console.warn('WebGPU not available, falling back to WebGL:', e);
+                    renderer = new THREE.WebGLRenderer({ 
+                        canvas,
+                        antialias: true,
+                        alpha: true 
+                    });
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                }
+
+                if (isWebGPU && renderer) {
+                    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                    renderer.toneMapping = THREE.ReinhardToneMapping;
+                    renderer.toneMappingExposure = Math.pow(1.47, 4.0);
+
+                    // Render Pipeline with Bloom
+                    try {
+                        renderPipeline = new THREE.RenderPipeline(renderer);
+
+                        const scenePass = pass(scene, camera);
+                        const scenePassColor = scenePass.getTextureNode('output').toInspector('Color');
+
+                        const bloomPass = bloom(scenePassColor).toInspector('Bloom');
+                        
+                        // Apply settings from screenshot
+                        bloomPass.threshold.value = 0.3;
+                        bloomPass.strength.value = 0.53;
+                        bloomPass.radius.value = 0.52;
+
+                        renderPipeline.outputNode = scenePassColor.add(bloomPass);
+                    } catch (bloomError) {
+                        console.warn('Bloom post-processing failed:', bloomError);
+                    }
+                }
+
+                // Mouse tracking
+                document.addEventListener('mousemove', (e) => {
+                    mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+                    mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+                });
+
+                // Animation loop
+                const clock = new THREE.Clock();
+
+                function animate() {
+                    requestAnimationFrame(animate);
+                    const elapsed = clock.getElapsedTime();
+
+                    // Rotate particles
+                    if (particles) {
+                        particles.rotation.y = elapsed * 0.05;
+                        particles.rotation.x = mouseY * 0.2;
+                    }
+
+                    // Animate speaker
+                    if (speaker) {
+                        speaker.rotation.x = elapsed * 0.3 + mouseY * 0.3;
+                        speaker.rotation.y = elapsed * 0.4 + mouseX * 0.3;
+                        if (wireframe) {
+                            wireframe.rotation.x = speaker.rotation.x;
+                            wireframe.rotation.y = speaker.rotation.y;
+                        }
+
+                        // Pulse effect
+                        const scale = 1 + Math.sin(elapsed * 2) * 0.05;
+                        speaker.scale.set(scale, scale, scale);
+                        speaker.material.emissiveIntensity = 2.5 + Math.sin(elapsed * 3) * 0.5;
+                    }
+
+                    // Rotate rings
+                    if (ring1) ring1.rotation.z = elapsed * 0.5;
+                    if (ring2) ring2.rotation.z = elapsed * 0.3;
+
+                    // Camera movement
+                    if (camera) {
+                        camera.position.x += (mouseX * 0.5 - camera.position.x) * 0.05;
+                        camera.position.y += (-mouseY * 0.5 - camera.position.y) * 0.05;
+                        camera.lookAt(0, 0, 0);
+                    }
+
+                    if (renderPipeline) {
+                        renderPipeline.render();
+                    } else if (renderer) {
+                        renderer.render(scene, camera);
+                    }
+                }
+
+                animate();
+
+                // Resize handler
+                window.addEventListener('resize', () => {
+                    if (camera) {
+                        camera.aspect = window.innerWidth / window.innerHeight;
+                        camera.updateProjectionMatrix();
+                    }
+                    if (renderer) {
+                        renderer.setSize(window.innerWidth, window.innerHeight);
+                    }
+                });
+
+                console.log('Three.js initialized successfully');
+            } catch (error) {
+                console.error('Three.js initialization failed:', error);
+            }
+        }
+
+        // Parallax Effect
+        window.addEventListener('scroll', () => {
+            const scrolled = window.scrollY;
+            const parallax = document.getElementById('heroParallax');
+            if (parallax) {
+                parallax.style.transform = `translateY(${scrolled * 0.5}px)`;
+            }
+        });
+
+        // Render Merch
+        function renderMerch() {
+            const grid = document.getElementById('merchGrid');
+            if (!grid) return;
+            
+            grid.innerHTML = merchItems.map(item => `
+                <div class="merch-card">
+                    <div class="merch-media">
+                        ${item.video ? `
+                            <video autoplay loop muted playsinline poster="${item.poster || ''}">
+                                <source src="${item.video}" type="video/mp4">
+                            </video>
+                        ` : `
+                            <img src="${item.img}" alt="${item.name}" onerror="this.parentElement.innerHTML='🎵'">
+                        `}
+                    </div>
+                    <div class="merch-info">
+                        <h3 class="merch-name">${item.name}</h3>
+                        <div class="merch-price">
+                            <span class="price-current">R ${item.price}</span>
+                        </div>
+                        <button class="btn-whatsapp" onclick="orderViaWhatsApp(${item.id})">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                            </svg>
+                            Order
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Cart Functions
+        window.toggleCart = function() {
+            document.getElementById('cartOverlay').classList.toggle('open');
+            document.getElementById('cartDrawer').classList.toggle('open');
+        }
+
+        window.addToCart = function(itemId) {
+            const item = merchItems.find(m => m.id === itemId);
+            if (!item) return;
+            
+            const existingItem = cart.find(c => c.id === itemId);
+            if (existingItem) {
+                existingItem.qty++;
+            } else {
+                cart.push({ ...item, qty: 1 });
+            }
+            
+            updateCart();
+        }
+
+        window.removeFromCart = function(itemId) {
+            cart = cart.filter(c => c.id !== itemId);
+            updateCart();
+        }
+
+        window.clearCart = function() {
+            cart = [];
+            updateCart();
+        }
+
+        function updateCart() {
+            const count = document.getElementById('cartCount');
+            const items = document.getElementById('cartItems');
+            const total = document.getElementById('cartTotal');
+            
+            const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+            count.textContent = totalItems;
+            
+            if (cart.length === 0) {
+                items.innerHTML = '<div class="cart-empty">Your cart is empty.</div>';
+                total.textContent = 'R 0.00';
+            } else {
+                items.innerHTML = cart.map(item => `
+                    <div class="cart-item">
+                        <div class="cart-item-media">🎵</div>
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${item.name}</div>
+                            <div class="cart-item-price">R ${item.price} × ${item.qty}</div>
+                        </div>
+                        <button class="cart-item-remove" onclick="removeFromCart(${item.id})">×</button>
+                    </div>
+                `).join('');
+                
+                const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+                total.textContent = `R ${totalPrice.toFixed(2)}`;
+            }
+        }
+
+        window.orderViaWhatsApp = function(itemId) {
+            const item = merchItems.find(m => m.id === itemId);
+            if (!item) return;
+            
+            const message = encodeURIComponent(`Hi! I'm interested in ordering:\n\n${item.name}\nPrice: R ${item.price}\n\nPlease let me know availability.`);
+            window.open(`https://wa.me/27000000000?text=${message}`, '_blank');
+        }
+
+        window.checkout = function() {
+            if (cart.length === 0) return;
+            
+            const items = cart.map(item => `${item.name} × ${item.qty} = R ${(item.price * item.qty).toFixed(2)}`).join('\n');
+            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const message = encodeURIComponent(`Hi! I'd like to order:\n\n${items}\n\nTotal: R ${total.toFixed(2)}\n\nPlease confirm availability.`);
+            window.open(`https://wa.me/27000000000?text=${message}`, '_blank');
+        }
+
+        // Initialize Animations
+        function initAnimations() {
+            const reveals = document.querySelectorAll('.reveal');
+            reveals.forEach(element => {
+                ScrollTrigger.create({
+                    trigger: element,
+                    start: 'top 85%',
+                    onEnter: () => element.classList.add('visible')
+                });
+            });
+
+            ScrollTrigger.create({
+                start: 'top -80',
+                end: 99999,
+                toggleClass: { className: 'scrolled', targets: '#mainNav' }
+            });
+
+            gsap.from('.playlist-card', {
+                scrollTrigger: {
+                    trigger: '.carousel-wrapper',
+                    start: 'top 80%'
+                },
+                scale: 0.8,
+                opacity: 0,
+                duration: 0.8,
+                stagger: 0.1,
+                ease: 'power3.out'
+            });
+
+            gsap.from('.merch-card', {
+                scrollTrigger: {
+                    trigger: '.merch-grid',
+                    start: 'top 80%'
+                },
+                y: 40,
+                opacity: 0,
+                duration: 0.6,
+                stagger: 0.1,
+                ease: 'power3.out'
+            });
+        }
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    lenis.scrollTo(target);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
